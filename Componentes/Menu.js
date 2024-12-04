@@ -1,43 +1,46 @@
 import { StyleSheet, Text, View } from "react-native";
 import Draggable from "react-native-draggable";
-
-const Menu = ({ pocionBotonDrag }) => {
-  console.log(
-    "Pocioconamiento con las props",
-    " X:",
-    Math.trunc(pocionBotonDrag.x),
-    " y:",
-    Math.trunc(pocionBotonDrag.y)
-  );
+const Menu = () => {
   return (
-    <Draggable
-      x={Math.trunc(pocionBotonDrag.x)}
-      y={Math.trunc(pocionBotonDrag.y)}
-      bounds="parent"
-      children={
-        <View style={style.Menu}>
-          <Text style={style.MenuText}>Hola mundo</Text>
-        </View>
-      }
-    />
+    <>
+      <Draggable
+        x={315}
+        y={520}
+        renderSize={46}
+        isCircle
+        shouldReverse
+        renderColor="#4165D5"
+        renderText="📝"
+      />
+      <Draggable
+        x={315}
+        y={577}
+        renderSize={46}
+        isCircle
+        shouldReverse
+        renderColor="#4165D5"
+        renderText="📝+"
+      />
+      <Draggable
+        x={315}
+        y={635}
+        renderSize={46}
+        isCircle
+        shouldReverse
+        renderColor="#4165D5"
+        renderText="📅"
+      />
+      <Draggable
+        x={315}
+        y={690}
+        renderSize={46}
+        isCircle
+        shouldReverse
+        renderColor="#4165D5"
+        renderText="⚙️"
+      />
+    </>
   );
 };
-const style = StyleSheet.create({
-  Menu: {
-    borderRadius: 10,
-    backgroundColor: "#4165D5",
-    width: 100,
-    height: 100,
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    bottom: 80, //80
-    right: 95, //95
-  },
-  MenuText: {
-    color: "#fff",
-    fontSize: 14,
-  },
-});
 
 export default Menu;
