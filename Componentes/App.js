@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { PaperProvider } from "react-native-paper";
 import Draggable from "react-native-draggable";
 import Menu from "./Menu";
+import Menu2 from "./Menu2";
+
 const App = () => {
   const [menuVisible, setMenuVisible] = useState(false);
+
   useEffect(() => {
     setMenuVisible(false);
   }, []);
@@ -16,7 +20,9 @@ const App = () => {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Menu2 />
+      </View>
       <Draggable
         x={310}
         y={750}
@@ -60,4 +66,5 @@ const styles = StyleSheet.create({
     fontSize: 50,
   },
 });
+
 export default App;
