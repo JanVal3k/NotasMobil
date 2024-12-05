@@ -24,10 +24,9 @@ const App = () => {
       <Draggable
         x={310}
         y={750}
-        renderSize={60}
+        renderSize={56}
         renderColor="#F1AC20"
         isCircle
-        renderText=" "
         shouldReverse
         onPressOut={handlePress}
         children={
@@ -38,9 +37,11 @@ const App = () => {
               height: 60,
               borderRadius: 20,
               backgroundColor: "#F1AC20",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <Text></Text>
+            <Text style={styles.Ctexto}>≡</Text>
           </View>
         }
       />
@@ -55,6 +56,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#c3e8c9",
     alignItems: "center",
     justifyContent: "center",
+  },
+  Ctexto: {
+    color: "#fff",
+    fontSize: 34,
   },
 });
 export default App;
