@@ -10,11 +10,7 @@ const App = () => {
   }, []);
 
   const handlePress = () => {
-    if (menuVisible) {
-      setMenuVisible(false);
-    } else {
-      setMenuVisible(true);
-    }
+    setMenuVisible(!menuVisible);
   };
 
   return (
@@ -38,13 +34,15 @@ const App = () => {
               height: 60,
               borderRadius: 20,
               backgroundColor: "#F1AC20",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <Text></Text>
+            <Text style={styles.txtBoton}>≡</Text>
           </View>
         }
       />
-      {menuVisible ? <Menu /> : <Text></Text>}
+      {menuVisible && <Menu />}
     </View>
   );
 };
@@ -53,8 +51,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#c3e8c9",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
+  },
+  txtBoton: {
+    top: -5,
+    color: "#fff",
+    fontSize: 50,
   },
 });
 export default App;
