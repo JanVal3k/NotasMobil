@@ -1,45 +1,46 @@
-import { StyleSheet, Text, View } from "react-native";
-import Draggable from "react-native-draggable";
+import React, { useState } from "react";
+import { View, Text } from "react-native";
+import { FAB, Portal } from "react-native-paper";
+
 const Menu = () => {
+  const [open, setOpen] = useState(true);
+
+  const onStateChange = ({ open: newOpen }) => {
+    setOpen(newOpen);
+  };
+
   return (
-    <>
-      <Draggable
-        x={315}
-        y={520}
-        renderSize={46}
-        isCircle
-        shouldReverse
-        renderColor="#4165D5"
-        renderText="📝"
+    <Portal>
+      <FAB.Group
+        open={open}
+        visible
+        icon={open ? "close" : "menu"}
+        backdropColor="transparent"
+        actions={[
+          {
+            icon: "note",
+            label: "Notas",
+            onPress: () => console.log("Pressed star"),
+          },
+          {
+            icon: "plus",
+            label: "Nota nueva",
+            onPress: () => console.log("Pressed add"),
+          },
+          {
+            icon: "calendar",
+            label: "Calendario",
+            onPress: () => console.log("Pressed email"),
+          },
+          {
+            icon: "cog",
+            label: "Configuracion",
+            onPress: () => console.log("Pressed notifications"),
+          },
+        ]}
+        onStateChange={onStateChange}
       />
-      <Draggable
-        x={315}
-        y={577}
-        renderSize={46}
-        isCircle
-        shouldReverse
-        renderColor="#4165D5"
-        renderText="📝+"
-      />
-      <Draggable
-        x={315}
-        y={635}
-        renderSize={46}
-        isCircle
-        shouldReverse
-        renderColor="#4165D5"
-        renderText="📅"
-      />
-      <Draggable
-        x={315}
-        y={690}
-        renderSize={46}
-        isCircle
-        shouldReverse
-        renderColor="#4165D5"
-        renderText="⚙️"
-      />
-    </>
+    </Portal>
   );
 };
 
