@@ -16,34 +16,12 @@ const App = () => {
   // };
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="light" />
-
-      <Draggable
-        x={310}
-        y={750}
-        renderSize={60}
-        renderColor="#F1AC20"
-        isCircle
-        renderText=" "
-        shouldReverse
-        onPressOut={handlePress}
-        children={
-          <View
-            style={{
-              color: "red",
-              width: 60,
-              height: 60,
-              borderRadius: 20,
-              backgroundColor: "#F1AC20",
-            }}
-          >
-            <Text></Text>
-          </View>
-        }
-      />
-      {menuVisible ? <Menu /> : <Text></Text>}
-    </View>
+    <PaperProvider>
+      <View style={styles.container}>
+        <StatusBar style="light" />
+        <Menu />
+      </View>
+    </PaperProvider>
   );
 };
 
