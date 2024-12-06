@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
 import Menu from "./Menu";
+import NotaNueva from "./NuevaNota";
 
 const App = () => {
-  const [Visible, setVisible] = useState(false);
-
+  //-----------------------------------------------------
+  const [notaNueva, setNotaNueva] = useState(null);
+  //-----------------------------------------------------
   useEffect(() => {
-    setVisible(false);
+    setNotaNueva(null);
   }, []);
 
-  // const handlePress = () => {
-  //   setVisible(!Visible);
-  // };
+  const handlePress = (activarComponente) => {
+    setNotaNueva(notaNueva === "NotaNueva" ? null : activarComponente);
+  };
 
   return (
     <PaperProvider>
       <View style={styles.container}>
         <StatusBar style="light" />
-        <Menu />
+        <Menu onClick={handlePress} />
+        {notaNueva === "NotaNueva" && <NotaNueva onClick={handlePress} />}
       </View>
     </PaperProvider>
   );

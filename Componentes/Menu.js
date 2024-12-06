@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text } from "react-native";
 import { FAB, Portal } from "react-native-paper";
 
-const Menu = () => {
+const Menu = ({ onClick }) => {
   const [open, setOpen] = useState(true);
 
   const onStateChange = ({ open: newOpen }) => {
@@ -25,7 +25,7 @@ const Menu = () => {
           {
             icon: "plus",
             label: "Nota nueva",
-            onPress: () => console.log("Pressed add"),
+            onPress: () => onClick("NotaNueva"),
           },
           {
             icon: "calendar",
