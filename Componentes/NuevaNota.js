@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Pressable } from "react-native";
 import { Modal, Button, Portal, TextInput } from "react-native-paper";
 //---------------------------------------------
 const NotaNueva = ({ onClick }) => {
@@ -39,14 +39,7 @@ const NotaNueva = ({ onClick }) => {
           multiline={true}
           textAlignVertical="top"
         />
-        <Button
-          icon="close"
-          style={styles.btnClose}
-          buttonColor="#F1AC20"
-          textColor="#fff"
-          mode="elevated"
-          onPress={hideModal}
-        ></Button>
+        <Pressable style={styles.btnClose} onPress={hideModal}></Pressable>
       </Modal>
     </Portal>
   );
