@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
   StyleSheet,
@@ -9,14 +9,34 @@ import {
   Modal,
   View,
   Dimensions,
+  Alert,
 } from "react-native";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Guardar from "./Clases/GuardarYMostrarNotas";
 
 const NotaNueva = ({ onClick }) => {
   const [modalVisual, setModalVisual] = useState(true);
   const [tituloTexto, setTituloTexto] = useState("");
   const [notaTexto, setNotaTexto] = useState("");
+  //--------------------------------------------
+  const GuardarNota = (clickGuardar, titulo, Nota) => {
+    const keyNumero = Math.floor(Math.random() * 3);
+    if (!titulo.trim()) {
+      Alert.alert("El titulo no puede estar vacio");
+    } else if (!Nota.trim()) {
+      Alert.alert("El contenido de la nota no puede estar vacio");
+    }
+    const btnGuardar = clickGuardar;
+    btnGuardar.storeData(
+      {
+        Titulo: titulo,
+        Contenido: Nota,
+      },
+      keyNumero
+    );
 
+    return btnGuardar;
+  };
+  //---------------------------------------------
   const hideModal = () => {
     setModalVisual(false);
     onClick(null);
@@ -55,13 +75,16 @@ const NotaNueva = ({ onClick }) => {
               style={styles.txtNota}
             />
           </SafeAreaView>
-          <Pressable style={styles.btnConfiguracion} onPress={hideModal}>
+          <Pressable style={styles.styleConfiguracion} onPress={hideModal}>
             <Text style={{ fontSize: 18 }}>⚙️</Text>
           </Pressable>
-          <Pressable style={styles.btnClose} onPress={hideModal}>
+          <Pressable style={styles.styleClose} onPress={hideModal}>
             <Text style={{ fontSize: 18, color: "black" }}>X</Text>
           </Pressable>
-          <Pressable style={styles.btnGuardar} onPress={hideModal}>
+          <Pressable
+            style={styles.styleGuardar}
+            onPress={() => GuardarNota(Guardar, tituloTexto, notaTexto)}
+          >
             <Text style={{ fontSize: 18 }}>💾</Text>
           </Pressable>
         </View>
@@ -107,7 +130,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     textAlignVertical: "top",
   },
-  btnClose: {
+  styleClose: {
     position: "absolute",
     backgroundColor: "#F1AC20",
     bottom: 20,
@@ -118,7 +141,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  btnConfiguracion: {
+  styleConfiguracion: {
     position: "absolute",
     backgroundColor: "#F1AC20",
     bottom: 20,
@@ -129,7 +152,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  btnGuardar: {
+  styleGuardar: {
     position: "absolute",
     backgroundColor: "#F1AC20",
     bottom: 20,
