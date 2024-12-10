@@ -43,4 +43,4 @@ const MenuProvisional = () => {
   );
 };
 
-export default Menu;
+export default MenuProvisional;
