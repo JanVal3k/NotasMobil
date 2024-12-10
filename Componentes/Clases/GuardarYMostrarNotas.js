@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
+import { Alert } from 'react-native';
 
 const key = uuid.v4();
 const storeData = async (value) => {
@@ -8,6 +9,7 @@ const storeData = async (value) => {
     const jsonValue = JSON.stringify(value);
 
     await AsyncStorage.setItem(`NotaNumero${key}`, jsonValue);
+    Alert.alert('Nora Guardad con exito.');
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
   }
@@ -41,4 +43,13 @@ const getAllNotes = async () => {
   }
 };
 
-export default { storeData, getData, getAllNotes };
+const deleteAllNotes = async () => {
+  try {
+    await AsyncStorage.clear();
+    Alert.alert('Datos borrados');
+  } catch (error) {
+    console.error('error al borrar', error);
+  }
+};
+
+export default { storeData, getData, getAllNotes, deleteAllNotes };

@@ -35,12 +35,13 @@ const TodaLasNotas = () => {
                   {nota.Titulo}
                 </Text>
               </View>
-
-              <View style={styles.notaStyle}>
-                <Text style={{ color: 'white', padding: 5, fontSize: 23 }}>
-                  {nota.Contenido}
-                </Text>
-              </View>
+              <ScrollView style={styles.scrollStyle}>
+                <View style={styles.notaStyle}>
+                  <Text style={{ color: 'white', padding: 5, fontSize: 23 }}>
+                    {nota.Contenido}
+                  </Text>
+                </View>
+              </ScrollView>
               <Text style={{ color: 'white' }}>
                 {'  '}
                 -------------------------------------------------------------------------------
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
   },
   notaVisible: {
     width: 350,
-    height: 200,
+    height: 235,
     borderRadius: 14,
     padding: 6,
     alignItems: 'flex-start',
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     height: 135,
     backgroundColor: '#F1AC20',
     borderRadius: 10,
-    padding: 2,
+    padding: 4,
   },
 });
 export default TodaLasNotas;
