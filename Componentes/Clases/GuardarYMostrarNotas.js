@@ -3,12 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import { Alert } from 'react-native';
 
-const key = uuid.v4();
+const key = uuid.v1();
 const storeData = async (value) => {
   try {
     const jsonValue = JSON.stringify(value);
 
     await AsyncStorage.setItem(`NotaNumero${key}`, jsonValue);
+    console.log('esta es la key', key);
     Alert.alert('Nora Guardad con exito.');
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
