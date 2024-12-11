@@ -11,15 +11,19 @@ import {
   Dimensions,
   Alert,
 } from 'react-native';
-
+import { Snackbar } from 'react-native-paper';
 import Guardar from './Clases/GuardarYMostrarNotas';
+import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
 const NotaNueva = ({ onClick }) => {
   const [modalVisual, setModalVisual] = useState(true);
   const [tituloTexto, setTituloTexto] = useState('');
   const [notaTexto, setNotaTexto] = useState('');
-
+  const [alerta, setAlerta] = useState(false);
+  const { setEstadoGlobal } = useEstadoGlobal();
   //--------------------------------------------
+  const onToggleSnackBar = () => setAlerta(!alerta);
+  const onDismissSnackBar = () => setAlerta(false);
   const GuardarNota = (clickGuardar, titulo, Nota) => {
     if (!titulo.trim()) {
       Alert.alert('El titulo no puede estar vacio');
@@ -31,14 +35,16 @@ const NotaNueva = ({ onClick }) => {
       Titulo: titulo,
       Contenido: Nota,
     });
-
+    onToggleSnackBar();
     return btnGuardar;
   };
   //---------------------------------------------
   const hideModal = () => {
     setModalVisual(false);
+    setEstadoGlobal(true);
     onClick(null);
   };
+  //---------------------------------------------
 
   return (
     <Modal
@@ -71,10 +77,10 @@ const NotaNueva = ({ onClick }) => {
             color="#FFF"
             style={styles.txtNota}
           />
-          <Pressable style={styles.styleConfiguracion} onPress={hideModal}>
+          <Pressable style={styles.styleConfiguracion} onPress={''}>
             <Text style={{ fontSize: 18 }}>⚙️</Text>
           </Pressable>
-          <Pressable style={styles.styleClose} onPress={hideModal}>
+          <Pressable style={styles.styleClose} onPress={''}>
             <Text style={{ fontSize: 18, color: 'black' }}>X</Text>
           </Pressable>
           <Pressable
@@ -85,6 +91,18 @@ const NotaNueva = ({ onClick }) => {
           </Pressable>
         </View>
       </View>
+      <Snackbar
+        visible={alerta}
+        onDismiss={onDismissSnackBar}
+        action={{
+          label: 'X',
+          onPress: () => {
+            hideModal();
+          },
+        }}
+      >
+        Nota Guardada
+      </Snackbar>
     </Modal>
   );
 };

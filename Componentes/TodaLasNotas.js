@@ -2,16 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEstadoGlobal } from './Clases/hookCambioEstado';
 //------------------------------------------
 const TodaLasNotas = () => {
   const [notas, setNotas] = useState([]);
+  const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
 
+  //---------------------------------------------
   useEffect(() => {
     GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
       setNotas(notasTraidas);
     });
   }, []);
+
+  useEffect(() => {
+    if (estadoGlobal) {
+      GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
+        setNotas(notasTraidas);
+        setEstadoGlobal(false);
+      });
+    }
+  }, [estadoGlobal]);
 
   const insets = useSafeAreaInsets();
   return (

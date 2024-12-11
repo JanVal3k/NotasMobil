@@ -6,6 +6,7 @@ import Menu from './Menu';
 import NotaNueva from './NuevaNota';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import TodaLasNotas from './TodaLasNotas';
+import { ProvedorEstado, useEstadoGlobal } from './Clases/hookCambioEstado';
 //---------------------------------------
 const App = () => {
   const [notaNueva, setNotaNueva] = useState(null);
@@ -19,20 +20,22 @@ const App = () => {
   };
 
   return (
-    <PaperProvider>
-      <SafeAreaProvider>
-        <View style={styles.container}>
-          <StatusBar style="light" />
-          <Menu onClick={handlePress} />
-          {notaNueva === 'NotaNueva' && (
-            <View style={styles.modalContainer}>
-              <NotaNueva onClick={handlePress} />
-            </View>
-          )}
-          <TodaLasNotas />
-        </View>
-      </SafeAreaProvider>
-    </PaperProvider>
+    <ProvedorEstado>
+      <PaperProvider>
+        <SafeAreaProvider>
+          <View style={styles.container}>
+            <StatusBar style="light" />
+            <Menu onClick={handlePress} />
+            {notaNueva === 'NotaNueva' && (
+              <View style={styles.modalContainer}>
+                <NotaNueva onClick={handlePress} />
+              </View>
+            )}
+            <TodaLasNotas />
+          </View>
+        </SafeAreaProvider>
+      </PaperProvider>
+    </ProvedorEstado>
   );
 };
 

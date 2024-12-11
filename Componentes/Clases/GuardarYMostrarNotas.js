@@ -10,7 +10,6 @@ const storeData = async (value) => {
 
     await AsyncStorage.setItem(`NotaNumero${key}`, jsonValue);
     console.log('esta es la key', key);
-    Alert.alert('Nora Guardad con exito.');
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
   }
