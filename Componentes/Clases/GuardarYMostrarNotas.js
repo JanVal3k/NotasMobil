@@ -3,9 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import { Alert } from 'react-native';
 
-const key = uuid.v1();
 const storeData = async (value) => {
   try {
+    const key = uuid.v1();
     const jsonValue = JSON.stringify(value);
 
     await AsyncStorage.setItem(`NotaNumero${key}`, jsonValue);
@@ -29,9 +29,13 @@ const getAllNotes = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
     const notaKeys = keys.filter((key) => key.startsWith('NotaNumero'));
-
+    const ordenarKeys = notaKeys.sort((a, b) => {
+      const numA = a.replace('NotaNumero', '');
+      const numB = b.replace('NotaNumero', '');
+      return numA.localeCompare(numB);
+    });
     const notas = await Promise.all(
-      notaKeys.map(async (key) => {
+      ordenarKeys.map(async (key) => {
         const nota = await getData(key.replace('NotaNumero', ''));
         return nota;
       })
