@@ -5,13 +5,14 @@ import {
   TextInput,
   Text,
   Pressable,
-  SafeAreaView,
-  Modal,
   View,
   Dimensions,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Snackbar } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Guardar from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
@@ -47,73 +48,98 @@ const NotaNueva = ({ onClick }) => {
   //---------------------------------------------
 
   return (
-    <Modal
-      visible={modalVisual}
-      onRequestClose={hideModal}
-      transparent={true}
-      animationType="fade"
-    >
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <StatusBar style="light" />
-          <TextInput
-            editable
-            multiline
-            numberOfLines={1}
-            placeholder="Titulo:"
-            placeholderTextColor="#6B6B6B"
-            onChangeText={setTituloTexto}
-            value={tituloTexto}
-            color="#FFF"
-            style={styles.txtTitulo}
-          />
-          <TextInput
-            editable
-            multiline={true}
-            placeholder="Nota:"
-            placeholderTextColor="#6B6B6B"
-            onChangeText={setNotaTexto}
-            value={notaTexto}
-            color="#FFF"
-            style={styles.txtNota}
-          />
-          <Pressable style={styles.styleConfiguracion} onPress={''}>
-            <Text style={{ fontSize: 18 }}>⚙️</Text>
-          </Pressable>
-          <Pressable style={styles.styleClose} onPress={''}>
-            <Text style={{ fontSize: 18, color: 'black' }}>X</Text>
-          </Pressable>
-          <Pressable
-            style={styles.styleGuardar}
-            onPress={() => GuardarNota(Guardar, tituloTexto, notaTexto)}
+    <SafeAreaProvider style={styles.centeredView}>
+      <View style={styles.KeyboarView}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={500}
+        >
+          <View style={styles.modalView}>
+            <TextInput
+              editable
+              multiline
+              numberOfLines={1}
+              placeholder="Titulo:"
+              placeholderTextColor="#6B6B6B"
+              onChangeText={setTituloTexto}
+              value={tituloTexto}
+              color="#FFF"
+              style={styles.txtTitulo}
+            />
+            <TextInput
+              editable
+              multiline={true}
+              placeholder="Nota:"
+              placeholderTextColor="#6B6B6B"
+              onChangeText={setNotaTexto}
+              value={notaTexto}
+              color="#FFF"
+              style={styles.txtNota}
+            />
+            <Pressable
+              style={styles.styleConfiguracion}
+              onPress={() => console.log('_')}
+            >
+              <Text style={{ fontSize: 18 }}>⚙️</Text>
+            </Pressable>
+            <Pressable style={styles.styleClose} onPress={hideModal}>
+              <Text style={{ fontSize: 18, color: 'black' }}>X</Text>
+            </Pressable>
+            <Pressable
+              style={styles.styleGuardar}
+              onPress={() => GuardarNota(Guardar, tituloTexto, notaTexto)}
+            >
+              <Text style={{ fontSize: 18 }}>💾</Text>
+            </Pressable>
+          </View>
+
+          <Snackbar
+            visible={alerta}
+            onDismiss={onDismissSnackBar}
+            style={{
+              zIndex: 20,
+              marginBottom: 70,
+              backgroundColor: '#FFF',
+            }}
+            theme={{
+              colors: {
+                onSurface: 'black',
+              },
+            }}
+            action={{
+              label: 'X',
+              onPress: () => {
+                hideModal;
+              },
+            }}
           >
-            <Text style={{ fontSize: 18 }}>💾</Text>
-          </Pressable>
-        </View>
+            <Text style={{ color: '#black' }}>Nota Guardada</Text>
+          </Snackbar>
+        </KeyboardAvoidingView>
       </View>
-      <Snackbar
-        visible={alerta}
-        onDismiss={onDismissSnackBar}
-        action={{
-          label: 'X',
-          onPress: () => {
-            hideModal();
-          },
-        }}
-      >
-        Nota Guardada
-      </Snackbar>
-    </Modal>
+    </SafeAreaProvider>
   );
 };
 
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
+    zIndex: 10,
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
+  KeyboarView: {
+    flex: 1,
+    width: 'auto',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 100,
+  },
+
   modalView: {
     width: '90%',
     height: 690,
@@ -180,3 +206,12 @@ const styles = StyleSheet.create({
 });
 
 export default NotaNueva;
+{
+  /* <Modal
+      visible={modalVisual}
+      onRequestClose={hideModal}
+      transparent={true}
+      animationType="fade"
+    ></Modal> 
+     </Modal>*/
+}

@@ -22,19 +22,17 @@ const App = () => {
   return (
     <ProvedorEstado>
       <PaperProvider>
-        <SafeAreaProvider>
-          <View style={styles.container}>
-            <StatusBar style="light" />
-            <Menu onClick={handlePress} />
-            {notaNueva === 'NotaNueva' && (
-              <View style={styles.modalContainer}>
-                <NotaNueva onClick={handlePress} />
-              </View>
-            )}
-            <ProvedorEstado>
-              <TodaLasNotas />
-            </ProvedorEstado>
-          </View>
+        <SafeAreaProvider style={styles.container}>
+          <StatusBar style="light" />
+          <Menu onClick={handlePress} />
+          {notaNueva === 'NotaNueva' && (
+            <View style={styles.modalContainer}>
+              <NotaNueva onClick={handlePress} />
+            </View>
+          )}
+          <ProvedorEstado>
+            <TodaLasNotas />
+          </ProvedorEstado>
         </SafeAreaProvider>
       </PaperProvider>
     </ProvedorEstado>
@@ -49,6 +47,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
+    flex: 1,
     position: 'absolute',
     top: 0,
     left: 0,
