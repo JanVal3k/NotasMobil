@@ -42,7 +42,7 @@ const App2 = () => {
 const styles = StyleSheet.create({
   safeAreaContent: {
     flex: 1,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: '#192b42',
   },
 });
 export default App2;
