@@ -1,32 +1,51 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import React, { useState, useEffect } from 'react';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
+import Collapsible from 'react-native-collapsible';
 
 const AllNotes = () => {
   const [notas, setNotas] = useState([]);
+  const [isCollapsed, setIsCollapsed] = useState(null);
   //------------------------------------------
   useEffect(() => {
     GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
       setNotas(notasTraidas);
-      console.log('esto tiene notasTraidas', notasTraidas);
     });
   }, []);
+  //------------------------------------------
+  const toggleCollapsible = (index) => {
+    setIsCollapsed(isCollapsed === index ? null : index);
+  };
   return (
     <View style={styles.viewContent}>
       <ScrollView>
         <Text style={{ color: 'white' }}>NOTAS</Text>
-        {notas.map((notas, index) => {
+        {notas.map((nota, index) => (
           <View key={index}>
             <View style={{ justifyContent: 'center', padding: 2 }}>
-              <Text style={{ color: 'white' }}>{notas.Titulo}</Text>
+              <TouchableOpacity onPress={() => toggleCollapsible(index)}>
+                <Text style={{ color: 'white' }}>
+                  {isCollapsed === index
+                    ? `${nota.Titulo} ⌄`
+                    : `${nota.Titulo} ⌃`}
+                </Text>
+              </TouchableOpacity>
             </View>
-            <ScrollView style={{ margin: 2 }}>
-              <View style={{ justifyContent: 'center', padding: 2 }}>
-                <Text style={{ color: 'white' }}>{notas.Contenido}</Text>
-              </View>
+            <ScrollView style={{ overflow: 'hidden' }}>
+              <Collapsible collapsed={isCollapsed !== index}>
+                <View style={{ justifyContent: 'center', margin: 2 }}>
+                  <Text style={{ color: 'white' }}>{nota.Contenido}</Text>
+                </View>
+              </Collapsible>
             </ScrollView>
-          </View>;
-        })}
+          </View>
+        ))}
       </ScrollView>
     </View>
   );
