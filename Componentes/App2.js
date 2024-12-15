@@ -6,7 +6,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useState } from 'react';
 //---------------------------------------
 import AllNotes from './AllNotes';
@@ -34,6 +34,10 @@ const App2 = () => {
           renderScene={renderScene}
           onIndexChange={setIndex}
           initialLayout={{ width: layout.width }}
+          renderTabBar={(props) => {
+            return <TabBar {...props} style={styles.tabBar} />;
+          }}
+          style={styles.tabBarStyle}
         />
       </SafeAreaView>
     </SafeAreaProvider>
@@ -42,6 +46,9 @@ const App2 = () => {
 const styles = StyleSheet.create({
   safeAreaContent: {
     flex: 1,
+    backgroundColor: '#192b42',
+  },
+  tabBar: {
     backgroundColor: '#192b42',
   },
 });
