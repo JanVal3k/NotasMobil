@@ -41,12 +41,14 @@ const App2 = () => {
           }}
           style={styles.tabBarStyle}
         />
-        <TouchableOpacity
-          style={styles.extraButton}
-          onPress={() => setIndex(1)}
-        >
-          <Text style={styles.extraButtonText}>+</Text>
-        </TouchableOpacity>
+        {index === 0 && (
+          <TouchableOpacity
+            style={styles.extraButton}
+            onPress={() => setIndex(1)}
+          >
+            <Text style={styles.extraButtonText}>+</Text>
+          </TouchableOpacity>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );

@@ -14,6 +14,8 @@ import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 const NewNote = () => {
   const [tituloTexto, setTituloTexto] = useState('');
   const [notaTexto, setNotaTexto] = useState('');
+  const [color, setColor] = useState('#7B8796');
+  const [pickerActivo, setPickerActivo] = useState(false);
   //--------------------------------------------
   const GuardarNota = (clickGuardar, titulo, Nota) => {
     if (!titulo.trim()) {
@@ -32,16 +34,16 @@ const NewNote = () => {
   return (
     <View style={styles.viewContent}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.keyboarContent}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={100}
       >
-        <View style={{ flex: 1 }}>
+        <View style={styles.viewTxts}>
           <TextInput
             editable
-            placeholder="Titulo"
+            placeholder="Titulo:"
             placeholderTextColor="white"
-            style={{ width: 300, margin: 2 }}
+            style={styles.txtTitle}
             onChangeText={setTituloTexto}
           />
           <TextInput
@@ -51,16 +53,24 @@ const NewNote = () => {
             placeholderTextColor="white"
             onChangeText={setNotaTexto}
             value={notaTexto}
-            color="#FFF"
-            style={{ width: 300, height: 500, margin: 2 }}
+            style={styles.txtNota}
           />
-          <Pressable
-            onPress={() =>
-              GuardarNota(GuardarYMostrarNotas, tituloTexto, notaTexto)
-            }
-          >
-            <Text style={{ fontSize: 18 }}>💾</Text>
-          </Pressable>
+          <View style={styles.viewBtns}>
+            <Pressable
+              onPress={() => setPickerActivo(true)}
+              style={styles.btnContent}
+            >
+              <Text style={styles.txtBoton}>✏️</Text>
+            </Pressable>
+            <Pressable
+              onPress={() =>
+                GuardarNota(GuardarYMostrarNotas, tituloTexto, notaTexto)
+              }
+              style={styles.btnContent}
+            >
+              <Text style={styles.txtBoton}>💾</Text>
+            </Pressable>
+          </View>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -73,6 +83,51 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     margin: 2,
+  },
+  keyboarContent: {
+    flex: 1,
+  },
+  viewTxts: {
+    flex: 1,
+    marginTop: 30,
+    width: 370,
+    height: 600,
+  },
+  txtTitle: {
+    flex: 1,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+    backgroundColor: '#7B8796',
+    color: 'white',
+    maxHeight: 60,
+    marginBottom: 8,
+  },
+  txtNota: {
+    flex: 1,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    backgroundColor: '#7B8796',
+    color: 'white',
+    maxHeight: 530,
+    overflow: 'hidden',
+  },
+  viewBtns: {
+    flex: 1,
+    marginTop: 5,
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+  },
+  btnContent: {
+    backgroundColor: '#5C6570',
+    borderRadius: 12,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  txtBoton: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
