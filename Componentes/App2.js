@@ -4,6 +4,7 @@ import {
   StatusBar,
   View,
   useWindowDimensions,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -11,6 +12,7 @@ import { useState } from 'react';
 //---------------------------------------
 import AllNotes from './AllNotes';
 import NewNote from './NewNote';
+
 //---------------------------------------
 const MostrarAllNotes = () => <AllNotes />;
 const MostrarNewNote = () => <NewNote />;
@@ -39,6 +41,12 @@ const App2 = () => {
           }}
           style={styles.tabBarStyle}
         />
+        <TouchableOpacity
+          style={styles.extraButton}
+          onPress={() => setIndex(1)}
+        >
+          <Text style={styles.extraButtonText}>+</Text>
+        </TouchableOpacity>
       </SafeAreaView>
     </SafeAreaProvider>
   );
@@ -50,6 +58,21 @@ const styles = StyleSheet.create({
   },
   tabBar: {
     backgroundColor: '#192b42',
+  },
+  extraButton: {
+    borderRadius: 12,
+    top: -50,
+    right: -300,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    height: 60,
+    backgroundColor: '#5C6570',
+  },
+  extraButtonText: {
+    fontSize: 30,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 export default App2;
