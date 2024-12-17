@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import { TextInput } from 'react-native-paper';
+import { format } from 'date-fns';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
@@ -18,6 +19,7 @@ const NewNote = () => {
   const [color, setColor] = useState('#7B8796');
   const [pickerActivo, setPickerActivo] = useState(false);
   const { setEstadoGlobal } = useEstadoGlobal();
+  const [fecha, setFecha] = useState();
   //--------------------------------------------
   const GuardarNota = (clickGuardar, titulo, Nota) => {
     if (!titulo.trim()) {
@@ -29,6 +31,7 @@ const NewNote = () => {
     btnGuardar.storeData({
       Titulo: titulo,
       Contenido: Nota,
+      Fecha: new Date(),
     });
     setEstadoGlobal(true);
     return btnGuardar;
@@ -36,6 +39,15 @@ const NewNote = () => {
   //--------------------------------------------
   const actualizarEstado = () => {
     setEstadoGlobal(true);
+  };
+  const limpiartTxts = () => {
+    setNotaTexto('');
+    setTituloTexto('');
+  };
+  //--------------------------------------------
+  const guardarFecha = () => {
+    const objetoFecha = new Date();
+    setFecha(objetoFecha);
   };
   //--------------------------------------------
   return (
@@ -50,28 +62,29 @@ const NewNote = () => {
             editable
             placeholder="Titulo:"
             placeholderTextColor="white"
-            style={styles.txtTitle}
+            maxLength={44}
             onChangeText={setTituloTexto}
+            value={tituloTexto}
+            style={styles.txtTitle}
           />
           <TextInput
             editable
             multiline={true}
             placeholder="Nota:"
             placeholderTextColor="white"
+            maxLength={1000}
             onChangeText={setNotaTexto}
             value={notaTexto}
             style={styles.txtNota}
           />
           <View style={styles.viewBtns}>
-            <Pressable
-              onPress={() => setPickerActivo(true)}
-              style={styles.btnContent}
-            >
+            <Pressable onPress={() => guardarFecha()} style={styles.btnContent}>
               <Text style={styles.txtBoton}>✏️</Text>
             </Pressable>
             <Pressable
               onPress={() => {
                 GuardarNota(GuardarYMostrarNotas, tituloTexto, notaTexto);
+                limpiartTxts();
                 actualizarEstado();
               }}
               style={styles.btnContent}
@@ -116,19 +129,18 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     backgroundColor: '#7B8796',
     color: 'white',
-    maxHeight: 530,
+    maxHeight: 580,
     overflow: 'hidden',
   },
   viewBtns: {
-    flex: 1,
-
     marginTop: 5,
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
   btnContent: {
+    marginLeft: 10,
     backgroundColor: '#5C6570',
-    borderRadius: 12,
+    borderRadius: 8,
     width: 40,
     height: 40,
     justifyContent: 'center',

@@ -9,6 +9,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import Collapsible from 'react-native-collapsible';
+import { format } from 'date-fns';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
 const AllNotes = () => {
@@ -59,25 +60,34 @@ const AllNotes = () => {
                 <View style={{ justifyContent: 'center', margin: 2 }}>
                   <Text style={{ color: 'white' }}>{nota.Contenido}</Text>
                 </View>
-                <View style={styles.viewPressables}>
-                  <Pressable
-                    style={styles.btnPressable}
-                    onPress={() => console.log('Botón editas')}
-                  >
-                    <Text>✏️</Text>
-                  </Pressable>
-                  <Pressable
-                    style={styles.btnPressable}
-                    onPress={() => console.log('Botón configuracion')}
-                  >
-                    <Text>⚙️</Text>
-                  </Pressable>
-                  <Pressable
-                    style={styles.btnPressable}
-                    onPress={() => console.log('Botón papelera')}
-                  >
-                    <Text>🗑️</Text>
-                  </Pressable>
+                <View style={styles.viewFcBtns}>
+                  <View style={styles.viewFecha}>
+                    <Text style={styles.txtFecha}>
+                      {nota.Fecha
+                        ? format(new Date(nota.Fecha), 'hh:mm a dd/MM/yyyy')
+                        : 'Sin fecha'}
+                    </Text>
+                  </View>
+                  <View style={styles.viewPressables}>
+                    <Pressable
+                      style={styles.btnPressable}
+                      onPress={() => console.log('Botón editas')}
+                    >
+                      <Text>✏️</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.btnPressable}
+                      onPress={() => console.log('Botón configuracion')}
+                    >
+                      <Text>⚙️</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.btnPressable}
+                      onPress={() => console.log('Botón papelera')}
+                    >
+                      <Text>🗑️</Text>
+                    </Pressable>
+                  </View>
                 </View>
               </Collapsible>
             </ScrollView>
@@ -123,12 +133,30 @@ const styles = StyleSheet.create({
     padding: 7,
     backgroundColor: '#7B8796',
   },
-  viewPressables: {
+  viewFcBtns: {
+    width: '100%',
     flexDirection: 'row',
+  },
+  viewPressables: {
     justifyContent: 'flex-end',
+    alignItems: 'center',
+    flexDirection: 'row',
+    width: '50%',
+    marginLeft: 1,
   },
   btnPressable: {
-    marginHorizontal: 13,
+    marginHorizontal: 10,
+  },
+  viewFecha: {
+    justifyContent: 'flex-start',
+    marginRight: 1,
+    padding: 3,
+    width: '50%',
+    height: 'auto',
+  },
+  txtFecha: {
+    fontSize: 12,
+    color: '#EBB249',
   },
 });
 
