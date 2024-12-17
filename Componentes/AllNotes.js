@@ -5,11 +5,12 @@ import {
   View,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import Collapsible from 'react-native-collapsible';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
 const AllNotes = () => {
@@ -31,6 +32,32 @@ const AllNotes = () => {
       });
     }
   }, [estadoGlobal]);
+  //------------------------------------------
+  const borrarNota = (keyNota) => {
+    console.log('esto es el index', keyNota);
+    if (GuardarYMostrarNotas.deleteNote(keyNota)) {
+      setEstadoGlobal(true);
+    }
+  };
+  //------------------------------------------
+  const alertaSiyNo = (key) => {
+    Alert.alert(
+      '¿Estás seguro?',
+      'Esta acción no se puede deshacer.',
+      [
+        {
+          text: 'NO',
+          onPress: () => console.log('Presionaste NO'),
+          style: 'cancel',
+        },
+        {
+          text: 'SI',
+          onPress: () => borrarNota(key),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
   //------------------------------------------
   const toggleCollapsible = (index) => {
     setIsCollapsed(isCollapsed === index ? null : index);
@@ -73,19 +100,19 @@ const AllNotes = () => {
                       style={styles.btnPressable}
                       onPress={() => console.log('Botón editas')}
                     >
-                      <Text>✏️</Text>
+                      <Text style={styles.txtBotones}>✏️</Text>
                     </Pressable>
                     <Pressable
                       style={styles.btnPressable}
                       onPress={() => console.log('Botón configuracion')}
                     >
-                      <Text>⚙️</Text>
+                      <Text style={styles.txtBotones}>⚙️</Text>
                     </Pressable>
                     <Pressable
                       style={styles.btnPressable}
-                      onPress={() => console.log('Botón papelera')}
+                      onPress={() => alertaSiyNo(nota.key)}
                     >
-                      <Text>🗑️</Text>
+                      <Text style={styles.txtBotones}>🗑️</Text>
                     </Pressable>
                   </View>
                 </View>
@@ -138,9 +165,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   viewPressables: {
+    flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    flexDirection: 'row',
     width: '50%',
     marginLeft: 1,
   },
@@ -157,6 +184,9 @@ const styles = StyleSheet.create({
   txtFecha: {
     fontSize: 12,
     color: '#EBB249',
+  },
+  txtBotones: {
+    margin: 1,
   },
 });
 

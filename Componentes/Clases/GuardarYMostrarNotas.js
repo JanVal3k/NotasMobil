@@ -28,22 +28,28 @@ const getAllNotes = async () => {
   try {
     const keys = await AsyncStorage.getAllKeys();
     const notaKeys = keys.filter((key) => key.startsWith('NotaNumero'));
-    const ordenarKeys = notaKeys.sort((a, b) => {
-      const numA = a.replace('NotaNumero', '');
-      const numB = b.replace('NotaNumero', '');
-      return numA.localeCompare(numB);
-    });
     const notas = await Promise.all(
-      ordenarKeys.map(async (key) => {
+      notaKeys.map(async (key) => {
         const nota = await getData(key.replace('NotaNumero', ''));
-        return nota;
+        return { ...nota, key };
       })
     );
 
-    return notas.filter((nota) => nota !== null);
+    return notas
+      .filter((nota) => nota !== null)
+      .sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha));
   } catch (e) {
     console.error('Error recuperando todas las notas', e);
     return [];
+  }
+};
+//-------------------------------------
+const deleteNote = async (key) => {
+  try {
+    await AsyncStorage.removeItem(key);
+    console.log('nota borrada con la key', key);
+  } catch (error) {
+    Alert.alert('error al borrar la nota', error);
   }
 };
 
@@ -56,4 +62,4 @@ const deleteAllNotes = async () => {
   }
 };
 
-export default { storeData, getData, getAllNotes, deleteAllNotes };
+export default { storeData, getData, getAllNotes, deleteAllNotes, deleteNote };

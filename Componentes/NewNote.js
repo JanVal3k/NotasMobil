@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import React, { useState } from 'react';
 import { TextInput } from 'react-native-paper';
-import { format } from 'date-fns';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
@@ -26,15 +25,16 @@ const NewNote = () => {
       Alert.alert('El titulo no puede estar vacio');
     } else if (!Nota.trim()) {
       Alert.alert('El contenido de la nota no puede estar vacio');
+    } else {
+      const btnGuardar = clickGuardar;
+      btnGuardar.storeData({
+        Titulo: titulo,
+        Contenido: Nota,
+        Fecha: new Date(),
+      });
+      setEstadoGlobal(true);
+      return btnGuardar;
     }
-    const btnGuardar = clickGuardar;
-    btnGuardar.storeData({
-      Titulo: titulo,
-      Contenido: Nota,
-      Fecha: new Date(),
-    });
-    setEstadoGlobal(true);
-    return btnGuardar;
   };
   //--------------------------------------------
   const actualizarEstado = () => {
