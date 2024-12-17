@@ -9,17 +9,27 @@ import {
 import React, { useState, useEffect } from 'react';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import Collapsible from 'react-native-collapsible';
-import { Button } from 'react-native-paper';
+import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
 const AllNotes = () => {
   const [notas, setNotas] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(null);
+  const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
   //------------------------------------------
   useEffect(() => {
     GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
       setNotas(notasTraidas);
     });
   }, []);
+  //------------------------------------------
+  useEffect(() => {
+    if (estadoGlobal) {
+      GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
+        setNotas(notasTraidas);
+        setEstadoGlobal(false);
+      });
+    }
+  }, [estadoGlobal]);
   //------------------------------------------
   const toggleCollapsible = (index) => {
     setIsCollapsed(isCollapsed === index ? null : index);

@@ -10,12 +10,14 @@ import {
 import React, { useState } from 'react';
 import { TextInput } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
+import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
 const NewNote = () => {
   const [tituloTexto, setTituloTexto] = useState('');
   const [notaTexto, setNotaTexto] = useState('');
   const [color, setColor] = useState('#7B8796');
   const [pickerActivo, setPickerActivo] = useState(false);
+  const { setEstadoGlobal } = useEstadoGlobal();
   //--------------------------------------------
   const GuardarNota = (clickGuardar, titulo, Nota) => {
     if (!titulo.trim()) {
@@ -28,7 +30,12 @@ const NewNote = () => {
       Titulo: titulo,
       Contenido: Nota,
     });
+    setEstadoGlobal(true);
     return btnGuardar;
+  };
+  //--------------------------------------------
+  const actualizarEstado = () => {
+    setEstadoGlobal(true);
   };
   //--------------------------------------------
   return (
@@ -63,9 +70,10 @@ const NewNote = () => {
               <Text style={styles.txtBoton}>✏️</Text>
             </Pressable>
             <Pressable
-              onPress={() =>
-                GuardarNota(GuardarYMostrarNotas, tituloTexto, notaTexto)
-              }
+              onPress={() => {
+                GuardarNota(GuardarYMostrarNotas, tituloTexto, notaTexto);
+                actualizarEstado();
+              }}
               style={styles.btnContent}
             >
               <Text style={styles.txtBoton}>💾</Text>
@@ -113,6 +121,7 @@ const styles = StyleSheet.create({
   },
   viewBtns: {
     flex: 1,
+
     marginTop: 5,
     flexDirection: 'row',
     justifyContent: 'flex-end',
