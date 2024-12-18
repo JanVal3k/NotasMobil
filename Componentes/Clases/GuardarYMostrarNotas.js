@@ -9,12 +9,13 @@ const storeData = async (value) => {
     const jsonValue = JSON.stringify(value);
 
     await AsyncStorage.setItem(`NotaNumero${key}`, jsonValue);
-    console.log('esta es la key', key);
+    //console.log('esta es la key', key);
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
   }
 };
 //-------------------------------------
+
 const getData = async (key) => {
   try {
     const jsonValue = await AsyncStorage.getItem(`NotaNumero${key}`);
@@ -61,5 +62,56 @@ const deleteAllNotes = async () => {
     console.error('error al borrar', error);
   }
 };
+//-------------------------------------
+//-------------------------------------
+const storeDatepicker = async (value) => {
+  try {
+    const key = uuid.v1();
+    const jsonValue = JSON.stringify(value);
 
-export default { storeData, getData, getAllNotes, deleteAllNotes, deleteNote };
+    await AsyncStorage.setItem(`Date${key}`, jsonValue);
+    console.log('esta es la key', key);
+  } catch (e) {
+    throw new Error('No se pudo recuperar el dato');
+  }
+};
+//-------------------------------------
+const getTarea = async (key) => {
+  try {
+    const jsonValue = await AsyncStorage.getItem(`Date${key}`);
+    return jsonValue != null ? JSON.parse(jsonValue) : null;
+  } catch (e) {
+    throw new Error('No se pudo recuperar la tarea');
+  }
+};
+//-------------------------------------
+const getAllTareas = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    const tareaKeys = keys.filter((key) => key.startsWith('Date'));
+    const tareas = await Promise.all(
+      tareaKeys.map(async (key) => {
+        const tarea = await getTarea(key.replace('Date', ''));
+        return { ...tarea, key };
+      })
+    );
+
+    return tareas
+      .filter((nota) => nota !== null)
+      .sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha));
+  } catch (e) {
+    console.error('Error recuperando todas las tareas', e);
+    return [];
+  }
+};
+//-------------------------------------
+export default {
+  storeData,
+  getData,
+  getAllNotes,
+  deleteAllNotes,
+  deleteNote,
+  storeDatepicker,
+  getAllTareas,
+  getTarea,
+};

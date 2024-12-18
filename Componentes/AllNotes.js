@@ -10,7 +10,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import Collapsible from 'react-native-collapsible';
-import { format, set } from 'date-fns';
+import { format } from 'date-fns';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
 const AllNotes = () => {
@@ -42,8 +42,8 @@ const AllNotes = () => {
   //------------------------------------------
   const alertaSiyNo = (key) => {
     Alert.alert(
-      '¿Estás seguro?',
       'Esta acción no se puede deshacer.',
+      '¿Estás seguro que quiere borrar la nota?',
       [
         {
           text: 'NO',

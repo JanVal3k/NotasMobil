@@ -2,7 +2,6 @@ import {
   Text,
   StyleSheet,
   StatusBar,
-  View,
   useWindowDimensions,
   TouchableOpacity,
 } from 'react-native';
@@ -12,6 +11,7 @@ import { useState } from 'react';
 //---------------------------------------
 import AllNotes from './AllNotes';
 import NewNote from './NewNote';
+import Calendario from './Calendario';
 import { ProvedorEstado } from './Clases/hookCambioEstado';
 
 //---------------------------------------
@@ -20,10 +20,12 @@ const MostrarNewNote = () => <NewNote />;
 const renderScene = SceneMap({
   first: MostrarAllNotes,
   second: MostrarNewNote,
+  third: Calendario,
 });
 const routes = [
   { key: 'first', title: 'Notas' },
   { key: 'second', title: 'Nueva Nota' },
+  { key: 'third', title: 'Calendario' },
 ];
 const App2 = () => {
   const layout = useWindowDimensions();
