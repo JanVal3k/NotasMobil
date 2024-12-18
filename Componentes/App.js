@@ -8,6 +8,7 @@ import {
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useState } from 'react';
+
 //---------------------------------------
 import AllNotes from './AllNotes';
 import NewNote from './NewNote';
@@ -15,6 +16,7 @@ import Calendario from './Calendario';
 import { ProvedorEstado } from './Clases/hookCambioEstado';
 
 //---------------------------------------
+
 const MostrarAllNotes = () => <AllNotes />;
 const MostrarNewNote = () => <NewNote />;
 const renderScene = SceneMap({
