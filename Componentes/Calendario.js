@@ -10,7 +10,12 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import { DatePickerModal, registerTranslation } from 'react-native-paper-dates';
+import {
+  DatePickerModal,
+  registerTranslation,
+  TimePickerModal,
+} from 'react-native-paper-dates';
+import { TextInput } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 import { da, es } from 'date-fns/locale';
@@ -21,14 +26,26 @@ const Calendario = () => {
   const [nuevaTarea, setNuevaTarea] = useState(false);
   const [fecha, setFecha] = useState(new Date());
   const [calenVisible, setCalenVisible] = useState(false);
+  const [timerVisible, setTimerVisible] = useState(false);
+  const [tituloTexto, setTituloTexto] = useState('');
 
   //--------------------------------------------
   const abrirCalendario = () => {
     setCalenVisible(true);
   };
-  const onConfirm = (date) => {
+  const abrirTimer = () => {
+    setTimerVisible(true);
+  };
+  const cerrarModal = () => {
+    setNuevaTarea(false);
+  };
+  const onConfirmDate = (date) => {
     setFecha(date);
     setCalenVisible(false);
+  };
+  const onConfirmTimer = (date) => {
+    setFecha(date);
+    setTimerVisible(false);
   };
   //--------------------------------------------
   useEffect(() => {
@@ -65,15 +82,6 @@ const Calendario = () => {
       <StatusBar style="light" />
       <ScrollView></ScrollView>
 
-      <DatePickerModal
-        animationType="slide"
-        locale="es"
-        mode="single"
-        visible={calenVisible}
-        onDismiss={() => onConfirm()}
-        onConfirm={() => onConfirm()}
-        date={fecha}
-      />
       <TouchableOpacity
         style={styles.extraButton}
         onPress={() => setNuevaTarea(true)}
@@ -89,18 +97,65 @@ const Calendario = () => {
           setNuevaTarea(!nuevaTarea);
         }}
       >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => abrirCalendario()}
-            >
-              <Text style={styles.textStyle}>📅</Text>
-            </Pressable>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.viewContetModal}>
+              <TextInput
+                editable
+                placeholder="Tarea:"
+                placeholderTextColor="black"
+                maxLength={30}
+                onChangeText={setTituloTexto}
+                value={tituloTexto}
+                style={styles.txtTitle}
+              />
+              <Text style={styles.txtFechayHora}>
+                Aqui va la hora o la fecha
+              </Text>
+              <Pressable
+                style={[styles.button, styles.pressableBtns]}
+                onPress={() => abrirCalendario()}
+              >
+                <Text style={styles.txtPressables}>📅</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.pressableBtns]}
+                onPress={() => abrirTimer()}
+              >
+                <Text style={styles.txtPressables}>⏰</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.pressableBtns]}
+                onPress={() => cerrarModal()}
+              >
+                <Text style={styles.txtPressablesClose}>X</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.btnGuaradar]}
+                onPress={() => cerrarModal()}
+              >
+                <Text style={styles.txtBtnGuardad}>Guardar</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
+      <DatePickerModal
+        animationType="slide"
+        locale="es"
+        mode="range"
+        visible={calenVisible}
+        onDismiss={() => onConfirmDate()}
+        onConfirm={() => onConfirmDate()}
+        date={fecha}
+      />
+      <TimePickerModal
+        visible={timerVisible}
+        onDismiss={() => onConfirmTimer()}
+        onConfirm={() => onConfirmTimer()}
+        hours={12}
+        minutes={14}
+      />
     </View>
   );
 };
@@ -111,21 +166,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  presseable: {
-    backgroundColor: '#7B8796',
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 60,
-    height: 60,
-  },
-  txtPresseable: {
-    fontSize: 30,
-  },
   extraButton: {
     borderRadius: 12,
     top: -50,
-    right: -150,
+    right: -130,
     justifyContent: 'center',
     alignItems: 'center',
     width: 60,
@@ -137,40 +181,97 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  modalView: {
-    margin: 20,
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 10,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: -2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    height: '20%',
   },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
+  modalTitleText: {
+    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
+  viewContetModal: {
+    flexDirection: 'row',
+    marginTop: 2,
+    height: '95%',
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 10,
+    alignItems: 'center',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  pressableBtns: {
+    right: -15,
+    top: -25,
+    width: 30,
+    height: 30,
+    margin: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  txtPressables: {
+    fontSize: 25,
+  },
+  txtPressablesClose: {
+    marginTop: 5,
+    fontSize: 23,
+    fontWeight: 'bold',
+    color: 'rgba(0, 0, 0, 0.5)',
+  },
+  txtTitle: {
+    flex: 1,
+    top: -25,
+    borderTopEndRadius: 12,
+    borderTopStartRadius: 12,
+    backgroundColor: 'white',
+    color: 'black',
+    maxWidth: 200,
+    maxHeight: 50,
+  },
+  btnGuaradar: {
+    top: 90,
+    left: 265,
+    zIndex: 1,
+    position: 'absolute',
+    width: 90,
+    height: 35,
+    backgroundColor: 'blue',
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  txtBtnGuardad: {
+    fontSize: 18,
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  txtFechayHora: {
+    top: 100,
+    left: 28,
+    color: 'rgba(0, 0, 0, 0.5)',
+    position: 'absolute',
   },
 });
 export default Calendario;

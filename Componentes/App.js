@@ -27,7 +27,7 @@ const renderScene = SceneMap({
 const routes = [
   { key: 'first', title: 'Notas' },
   { key: 'second', title: 'Nueva Nota' },
-  { key: 'third', title: 'Calendario' },
+  { key: 'third', title: 'Tareas' },
 ];
 const App2 = () => {
   const layout = useWindowDimensions();
