@@ -18,13 +18,15 @@ import {
 import { TextInput } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
-import { da, es } from 'date-fns/locale';
+import { es } from 'date-fns/locale';
+import { format } from 'date-fns';
 registerTranslation('es', es);
 const Calendario = () => {
   const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
   const [tareas, setTareas] = useState([]);
   const [nuevaTarea, setNuevaTarea] = useState(false);
-  const [fecha, setFecha] = useState(new Date());
+  const [useFecha, setUseFecha] = useState(new Date());
+  const [useTiempo, setUseTiempo] = useState({});
   const [calenVisible, setCalenVisible] = useState(false);
   const [timerVisible, setTimerVisible] = useState(false);
   const [tituloTexto, setTituloTexto] = useState('');
@@ -40,11 +42,14 @@ const Calendario = () => {
     setNuevaTarea(false);
   };
   const onConfirmDate = (date) => {
-    setFecha(date);
+    const startDateObjeto = new Date(date.startDate);
+    const endDateObjeto = new Date(date.endDate);
+    const objetoFecha = { startDate: startDateObjeto, endDate: endDateObjeto };
+    setUseFecha(date);
     setCalenVisible(false);
   };
-  const onConfirmTimer = (date) => {
-    setFecha(date);
+  const onConfirmTimer = (Tiempo) => {
+    setUseTiempo({ Tiempo });
     setTimerVisible(false);
   };
   //--------------------------------------------
@@ -63,14 +68,15 @@ const Calendario = () => {
     }
   }, [estadoGlobal]);
   //------------------------------------------
-  const GuardarTareas = (clickGuardar, titulo) => {
-    if (!Tarea.trim()) {
+  const GuardarTareas = (clickGuardar, titulo, fecha, tiempo) => {
+    if (!titulo.trim()) {
       Alert.alert('El nombre de la tarea no puede estar vacio');
     } else {
       const btnGuardar = clickGuardar;
       btnGuardar.storeDatepicker({
         Titulo: titulo,
-        Fecha: new Date(),
+        Fecha: useFecha,
+        Hora: useTiempo,
       });
       setEstadoGlobal(true);
       return btnGuardar;
@@ -80,7 +86,14 @@ const Calendario = () => {
   return (
     <View style={styles.viewContainer}>
       <StatusBar style="light" />
-      <ScrollView></ScrollView>
+      <ScrollView>
+        <Text style={{ color: 'white' }}>
+          {' '}
+          {format(useFecha.startDate, 'dd/MM/yyyy')}
+          {' - '}
+          {format(useFecha.endDate, 'dd/MM/yyyy')}
+        </Text>
+      </ScrollView>
 
       <TouchableOpacity
         style={styles.extraButton}
@@ -132,7 +145,15 @@ const Calendario = () => {
               </Pressable>
               <Pressable
                 style={[styles.button, styles.btnGuaradar]}
-                onPress={() => cerrarModal()}
+                onPress={() => {
+                  GuardarTareas(
+                    GuardarYMostrarNotas,
+                    tituloTexto,
+                    useFecha,
+                    useTiempo
+                  );
+                  cerrarModal();
+                }}
               >
                 <Text style={styles.txtBtnGuardad}>Guardar</Text>
               </Pressable>
@@ -145,14 +166,14 @@ const Calendario = () => {
         locale="es"
         mode="range"
         visible={calenVisible}
-        onDismiss={() => onConfirmDate()}
-        onConfirm={() => onConfirmDate()}
-        date={fecha}
+        onDismiss={() => setCalenVisible(false)}
+        onConfirm={(date) => onConfirmDate(date)}
+        date={useFecha}
       />
       <TimePickerModal
         visible={timerVisible}
-        onDismiss={() => onConfirmTimer()}
-        onConfirm={() => onConfirmTimer()}
+        onDismiss={() => setTimerVisible(false)}
+        onConfirm={(Tiempo) => onConfirmTimer(Tiempo)}
         hours={12}
         minutes={14}
       />

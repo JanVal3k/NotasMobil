@@ -70,7 +70,7 @@ const storeDatepicker = async (value) => {
     const jsonValue = JSON.stringify(value);
 
     await AsyncStorage.setItem(`Date${key}`, jsonValue);
-    console.log('esta es la key', key);
+    console.log('este es el contenido de la tarea', value);
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
   }
