@@ -34,6 +34,7 @@ const Calendario = () => {
   const [timerVisible, setTimerVisible] = useState(false);
   const [tituloTexto, setTituloTexto] = useState('');
   const [tareaSelect, setTareaSelect] = useState({});
+  const [colors, setColors] = useState({});
   //--------------------------------------------
   const abrirCalendario = () => {
     setCalenVisible(true);
@@ -45,9 +46,6 @@ const Calendario = () => {
     setNuevaTarea(false);
   };
   const onConfirmDate = (date) => {
-    const startDateObjeto = new Date(date.startDate);
-    const endDateObjeto = new Date(date.endDate);
-    const objetoFecha = { startDate: startDateObjeto, endDate: endDateObjeto };
     setUseFecha(date);
     setCalenVisible(false);
   };
@@ -93,6 +91,17 @@ const Calendario = () => {
       ...prev,
       [item.Key]: !prev[item.Key],
     }));
+    setColors((prevColors) => {
+      const updatedColors = { ...prevColors };
+
+      if (!prevColors[item.Key] && !tareaSelect[item.Key]) {
+        updatedColors[item.Key] = { txtColor: 'black', bgColor: 'white' };
+      } else if (prevColors[item.Key]) {
+        delete updatedColors[item.Key];
+      }
+
+      return updatedColors;
+    });
   };
   //------------------------------------------
   const borrarTxtFechyHora = () => {
@@ -101,49 +110,34 @@ const Calendario = () => {
   };
   //------------------------------------------
   const renderItem = ({ item }) => {
+    const colorStyles = colors[item.Key] || {
+      txtColor: 'black',
+      bgColor: 'white',
+    };
     return (
       <View
-        style={{
-          flex: 1,
-          padding: 10,
-          width: '97%',
-          margin: 5,
-          backgroundColor: 'white',
-          borderRadius: 12,
-          justifyContent: 'center',
-          flexDirection: 'row',
-        }}
+        style={[
+          styles.ContenedorFlatList,
+          { backgroundColor: colorStyles.bgColor },
+        ]}
       >
-        <View
-          style={{
-            width: '20%',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
+        <View style={styles.contenedorCheckbox}>
           <Checkbox
             status={tareaSelect[item.Key] ? 'checked' : 'unchecked'}
             onPress={() => toggleCheck(item)}
-            color={tareaSelect[item.Key] ? 'green' : 'yellow'}
           />
         </View>
-        <View
-          style={{
-            width: '80%',
-            justifyContent: 'center',
-            padding: 5,
-          }}
-        >
-          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+        <View style={styles.contenedorTxtFlat}>
+          <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
             Titulo: {item.Titulo}
           </Text>
           <Text
-            style={{ fontSize: 14 }}
+            style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}
           >{`Inicio: ${new Date(item.Fecha.startDate).toLocaleString()}`}</Text>
           <Text
-            style={{ fontSize: 14 }}
+            style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}
           >{`Fin: ${new Date(item.Fecha.endDate).toLocaleString()}`}</Text>
-          <Text style={{ fontSize: 14 }}>
+          <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
             {`Hora: ${item.Hora.Tiempo.hours}:${item.Hora.Tiempo.minutes}`} ⏰
           </Text>
         </View>
@@ -157,7 +151,7 @@ const Calendario = () => {
 
       <FlatList
         data={tareas}
-        keyExtractor={(item) => item.Key}
+        keyExtractor={(item, index) => item.Key || index.toString()}
         renderItem={renderItem}
       />
 
@@ -359,6 +353,32 @@ const styles = StyleSheet.create({
     left: 28,
     color: 'rgba(0, 0, 0, 0.5)',
     position: 'absolute',
+  },
+  ContenedorFlatList: {
+    flex: 1,
+    padding: 10,
+    width: '97 %',
+    margin: 5,
+    borderRadius: 12,
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  contenedorCheckbox: {
+    width: '20%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contenedorTxtFlat: {
+    width: '80%',
+    justifyContent: 'center',
+    padding: 5,
+  },
+  txtTitleFlat: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  txtsFlats: {
+    fontSize: 14,
   },
 });
 export default Calendario;
