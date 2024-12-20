@@ -9,18 +9,21 @@ import {
   Modal,
   TouchableOpacity,
   Alert,
+  FlatList,
 } from 'react-native';
 import {
   DatePickerModal,
   registerTranslation,
   TimePickerModal,
 } from 'react-native-paper-dates';
-import { TextInput } from 'react-native-paper';
+import { TextInput, Checkbox } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 import { es } from 'date-fns/locale';
 import { format } from 'date-fns';
 registerTranslation('es', es);
+//------------------------------------------
+//------------------------------------------
 const Calendario = () => {
   const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
   const [tareas, setTareas] = useState([]);
@@ -30,7 +33,7 @@ const Calendario = () => {
   const [calenVisible, setCalenVisible] = useState(false);
   const [timerVisible, setTimerVisible] = useState(false);
   const [tituloTexto, setTituloTexto] = useState('');
-
+  const [checked, setChecked] = useState(false);
   //--------------------------------------------
   const abrirCalendario = () => {
     setCalenVisible(true);
@@ -57,6 +60,7 @@ const Calendario = () => {
     GuardarYMostrarNotas.getAllTareas().then((tareasTraidas) => {
       setTareas(tareasTraidas);
     });
+    console.log('tareas = :', tareas);
   }, []);
   //------------------------------------------
   useEffect(() => {
@@ -74,26 +78,55 @@ const Calendario = () => {
     } else {
       const btnGuardar = clickGuardar;
       btnGuardar.storeDatepicker({
+        Key: Date.now().toString(),
         Titulo: titulo,
-        Fecha: useFecha,
-        Hora: useTiempo,
+        Fecha: fecha,
+        Hora: tiempo,
       });
+      borrarTxtFechyHora();
       setEstadoGlobal(true);
       return btnGuardar;
     }
   };
   //------------------------------------------
+  const toggleCheck = () => {
+    setChecked(!checked);
+    // Aquí puedes realizar la acción extra
+    console.log(
+      `Checkbox de ${tareas.Titulo} está ${!checked ? 'marcado' : 'desmarcado'}`
+    );
+  };
+  //------------------------------------------
+  const borrarTxtFechyHora = () => {
+    setTituloTexto(''), setUseFecha(new Date());
+    setUseTiempo({});
+  };
+  //------------------------------------------
+  const renderItem = ({ item }) => {
+    return (
+      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
+        <Checkbox
+          status={checked ? 'checked' : 'unchecked'}
+          onPress={toggleCheck}
+        />
+        <Text style={{ fontWeight: 'bold' }}>{item.Titulo}</Text>
+        <Text>{`Inicio: ${new Date(item.Fecha.startDate).toLocaleString()}`}</Text>
+        <Text>{`Fin: ${new Date(item.Fecha.endDate).toLocaleString()}`}</Text>
+        <Text>{`Hora: ${item.Hora.Tiempo.hours}:${item.Hora.Tiempo.minutes}`}</Text>
+      </View>
+    );
+  };
+  //------------------------------------------
   return (
     <View style={styles.viewContainer}>
       <StatusBar style="light" />
-      <ScrollView>
-        <Text style={{ color: 'white' }}>
-          {' '}
-          {format(useFecha.startDate, 'dd/MM/yyyy')}
-          {' - '}
-          {format(useFecha.endDate, 'dd/MM/yyyy')}
-        </Text>
-      </ScrollView>
+      <View style={{ flex: 1 }}>
+        <FlatList
+          data={tareas}
+          keyExtractor={(item) => item.Key}
+          renderItem={renderItem}
+        />
+      </View>
 
       <TouchableOpacity
         style={styles.extraButton}

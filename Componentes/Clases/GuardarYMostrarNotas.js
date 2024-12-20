@@ -95,7 +95,6 @@ const getAllTareas = async () => {
         return { ...tarea, key };
       })
     );
-
     return tareas
       .filter((nota) => nota !== null)
       .sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha));
