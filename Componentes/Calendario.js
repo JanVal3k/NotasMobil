@@ -33,7 +33,7 @@ const Calendario = () => {
   const [calenVisible, setCalenVisible] = useState(false);
   const [timerVisible, setTimerVisible] = useState(false);
   const [tituloTexto, setTituloTexto] = useState('');
-  const [checked, setChecked] = useState(false);
+  const [tareaSelect, setTareaSelect] = useState({});
   //--------------------------------------------
   const abrirCalendario = () => {
     setCalenVisible(true);
@@ -60,7 +60,6 @@ const Calendario = () => {
     GuardarYMostrarNotas.getAllTareas().then((tareasTraidas) => {
       setTareas(tareasTraidas);
     });
-    console.log('tareas = :', tareas);
   }, []);
   //------------------------------------------
   useEffect(() => {
@@ -89,12 +88,11 @@ const Calendario = () => {
     }
   };
   //------------------------------------------
-  const toggleCheck = () => {
-    setChecked(!checked);
-    // Aquí puedes realizar la acción extra
-    console.log(
-      `Checkbox de ${tareas.Titulo} está ${!checked ? 'marcado' : 'desmarcado'}`
-    );
+  const toggleCheck = (item) => {
+    setTareaSelect((prev) => ({
+      ...prev,
+      [item.Key]: !prev[item.Key],
+    }));
   };
   //------------------------------------------
   const borrarTxtFechyHora = () => {
@@ -104,15 +102,51 @@ const Calendario = () => {
   //------------------------------------------
   const renderItem = ({ item }) => {
     return (
-      <View style={{ padding: 10, borderBottomWidth: 1, borderColor: '#ccc' }}>
-        <Checkbox
-          status={checked ? 'checked' : 'unchecked'}
-          onPress={toggleCheck}
-        />
-        <Text style={{ fontWeight: 'bold' }}>{item.Titulo}</Text>
-        <Text>{`Inicio: ${new Date(item.Fecha.startDate).toLocaleString()}`}</Text>
-        <Text>{`Fin: ${new Date(item.Fecha.endDate).toLocaleString()}`}</Text>
-        <Text>{`Hora: ${item.Hora.Tiempo.hours}:${item.Hora.Tiempo.minutes}`}</Text>
+      <View
+        style={{
+          flex: 1,
+          padding: 10,
+          width: '97%',
+          margin: 5,
+          backgroundColor: 'white',
+          borderRadius: 12,
+          justifyContent: 'center',
+          flexDirection: 'row',
+        }}
+      >
+        <View
+          style={{
+            width: '20%',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Checkbox
+            status={tareaSelect[item.Key] ? 'checked' : 'unchecked'}
+            onPress={() => toggleCheck(item)}
+            color={tareaSelect[item.Key] ? 'green' : 'yellow'}
+          />
+        </View>
+        <View
+          style={{
+            width: '80%',
+            justifyContent: 'center',
+            padding: 5,
+          }}
+        >
+          <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+            Titulo: {item.Titulo}
+          </Text>
+          <Text
+            style={{ fontSize: 14 }}
+          >{`Inicio: ${new Date(item.Fecha.startDate).toLocaleString()}`}</Text>
+          <Text
+            style={{ fontSize: 14 }}
+          >{`Fin: ${new Date(item.Fecha.endDate).toLocaleString()}`}</Text>
+          <Text style={{ fontSize: 14 }}>
+            {`Hora: ${item.Hora.Tiempo.hours}:${item.Hora.Tiempo.minutes}`} ⏰
+          </Text>
+        </View>
       </View>
     );
   };
@@ -120,13 +154,12 @@ const Calendario = () => {
   return (
     <View style={styles.viewContainer}>
       <StatusBar style="light" />
-      <View style={{ flex: 1 }}>
-        <FlatList
-          data={tareas}
-          keyExtractor={(item) => item.Key}
-          renderItem={renderItem}
-        />
-      </View>
+
+      <FlatList
+        data={tareas}
+        keyExtractor={(item) => item.Key}
+        renderItem={renderItem}
+      />
 
       <TouchableOpacity
         style={styles.extraButton}
