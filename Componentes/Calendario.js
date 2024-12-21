@@ -94,9 +94,9 @@ const Calendario = () => {
     setColors((prevColors) => {
       const updatedColors = { ...prevColors };
 
-      if (!prevColors[item.Key] && !tareaSelect[item.Key]) {
-        updatedColors[item.Key] = { txtColor: 'black', bgColor: 'white' };
-      } else if (prevColors[item.Key]) {
+      if (!prevColors[item.Key]) {
+        updatedColors[item.Key] = { txtColor: 'white', bgColor: 'black' };
+      } else {
         delete updatedColors[item.Key];
       }
 
@@ -131,14 +131,21 @@ const Calendario = () => {
           <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
             Titulo: {item.Titulo}
           </Text>
-          <Text
-            style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}
-          >{`Inicio: ${new Date(item.Fecha.startDate).toLocaleString()}`}</Text>
-          <Text
-            style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}
-          >{`Fin: ${new Date(item.Fecha.endDate).toLocaleString()}`}</Text>
           <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
-            {`Hora: ${item.Hora.Tiempo.hours}:${item.Hora.Tiempo.minutes}`} ⏰
+            {item.Fecha.startDate
+              ? `Inicio:  ${format(item.Fecha.startDate, 'dd/MM/yyyy')}`
+              : 'Sin fecha inicial'}
+          </Text>
+          <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
+            {item.Fecha.endDate
+              ? `Fin:  ${format(item.Fecha.endDate, 'dd/MM/yyyy')}`
+              : 'Sin fecha final'}
+          </Text>
+          <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
+            {item.Hora?.Tiempo?.hours
+              ? `Hora: ${item.Hora.Tiempo.hours}:${item.Hora.Tiempo.minutes}`
+              : 'Sin hora'}{' '}
+            ⏰
           </Text>
         </View>
       </View>
