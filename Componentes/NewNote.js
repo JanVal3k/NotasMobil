@@ -61,7 +61,7 @@ const NewNote = () => {
           <TextInput
             editable
             placeholder="Titulo:"
-            placeholderTextColor="white"
+            placeholderTextColor="black"
             maxLength={44}
             onChangeText={setTituloTexto}
             value={tituloTexto}
@@ -71,7 +71,7 @@ const NewNote = () => {
             editable
             multiline={true}
             placeholder="Nota:"
-            placeholderTextColor="white"
+            placeholderTextColor="black"
             maxLength={1000}
             onChangeText={setNotaTexto}
             value={notaTexto}
@@ -116,18 +116,16 @@ const styles = StyleSheet.create({
   },
   txtTitle: {
     flex: 1,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    backgroundColor: '#7B8796',
+    borderRadius: 10,
+    backgroundColor: 'white',
     color: 'white',
     maxHeight: 60,
     marginBottom: 8,
   },
   txtNota: {
     flex: 1,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-    backgroundColor: '#7B8796',
+    borderRadius: 10,
+    backgroundColor: 'white',
     color: 'white',
     maxHeight: 580,
     overflow: 'hidden',
@@ -139,7 +137,7 @@ const styles = StyleSheet.create({
   },
   btnContent: {
     marginLeft: 10,
-    backgroundColor: '#5C6570',
+    backgroundColor: 'white',
     borderRadius: 8,
     width: 40,
     height: 40,
