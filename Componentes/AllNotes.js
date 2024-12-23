@@ -4,11 +4,13 @@ import {
   Text,
   View,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
   Pressable,
   Alert,
 } from 'react-native';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import Collapsible from 'react-native-collapsible';
 import { format, set } from 'date-fns';
@@ -23,6 +25,9 @@ const AllNotes = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [notaSeleccionada, setNotaSeleccionada] = useState(null);
   const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
+  //------------------------------------------
+  const tituloRef = useRef('');
+  const notaRef = useRef('');
   //------------------------------------------
   useEffect(() => {
     GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
@@ -41,8 +46,8 @@ const AllNotes = () => {
   //------------------------------------------
   const mostrarModal = (nota) => {
     setNotaSeleccionada(nota);
-    setTituloTexto(nota.Titulo);
-    setNotaTexto(nota.Contenido);
+    tituloRef.current = nota.Titulo;
+    notaRef.current = nota.Contenido;
     setModalVisible(true);
   };
   const ocultarModal = () => {
@@ -50,27 +55,24 @@ const AllNotes = () => {
   };
   //------------------------------------------
   const borrarNota = (keyNota) => {
-    console.log('esto es el index', keyNota);
     if (GuardarYMostrarNotas.deleteNote(keyNota)) {
       setEstadoGlobal(true);
     }
   };
   //------------------------------------------
-  const editarNota = (btnEditarNota, key, contentTitulo, contentNota) => {
-    if (!contentTitulo.trim()) {
+  const editarNota = (btnEditarNota, key) => {
+    if (!tituloRef.current.trim()) {
       Alert.alert('El titulo no puede estar vacio');
-    } else if (!contentNota.trim()) {
+    } else if (!notaRef.current.trim()) {
       Alert.alert('El contenido de la nota no puede estar vacio');
     } else {
-      console.log('esto es el key', key);
-      const btnGuardar = btnEditarNota;
-      btnGuardar.editNota(key, {
-        Titulo: contentTitulo,
-        Contenido: contentNota,
+      btnEditarNota.editNota(key, {
+        Titulo: tituloRef.current,
+        Contenido: notaRef.current,
         Fecha: new Date(),
       });
       setEstadoGlobal(true);
-      return btnGuardar;
+      return btnEditarNota;
     }
   };
   //------------------------------------------
@@ -162,37 +164,42 @@ const AllNotes = () => {
           contentContainerStyle={styles.contentModal}
         >
           {notaSeleccionada && (
-            <View style={styles.viewModal}>
-              <TextInput
-                editable
-                maxLength={44}
-                value={tituloTexto}
-                onChangeText={setTituloTexto}
-                style={styles.txtTituloModal}
-              ></TextInput>
-              <TextInput
-                editable
-                maxLength={1000}
-                multiline={true}
-                value={notaTexto}
-                onChangeText={setNotaTexto}
-                style={styles.txtNotaModal}
-              ></TextInput>
-              <Pressable
-                style={styles.btnModal}
-                onPress={() => {
-                  editarNota(
-                    GuardarYMostrarNotas,
-                    notaSeleccionada.key,
-                    tituloTexto,
-                    notaTexto
-                  );
-                  ocultarModal();
-                }}
-              >
-                <Text style={styles.txtBtnModal}>Guardar</Text>
-              </Pressable>
-            </View>
+            <KeyboardAvoidingView
+              style={{ flex: 1 }}
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+              keyboardVerticalOffset={100}
+            >
+              <View style={styles.viewModal}>
+                <TextInput
+                  editable
+                  maxLength={44}
+                  defaultValue={tituloRef.current}
+                  onChangeText={(texto) => {
+                    tituloRef.current = texto;
+                  }}
+                  style={styles.txtTituloModal}
+                ></TextInput>
+                <TextInput
+                  editable
+                  maxLength={1000}
+                  multiline={true}
+                  defaultValue={notaRef.current}
+                  onChangeText={(texto) => {
+                    notaRef.current = texto;
+                  }}
+                  style={styles.txtNotaModal}
+                ></TextInput>
+                <Pressable
+                  style={styles.btnModal}
+                  onPress={() => {
+                    editarNota(GuardarYMostrarNotas, notaSeleccionada.key);
+                    ocultarModal();
+                  }}
+                >
+                  <Text style={styles.txtBtnModal}>Guardar</Text>
+                </Pressable>
+              </View>
+            </KeyboardAvoidingView>
           )}
         </Modal>
       </Portal>
@@ -280,6 +287,7 @@ const styles = StyleSheet.create({
     width: '94%',
     height: 50,
     margin: 5,
+    padding: 5,
     borderRadius: 10,
     fontSize: 18,
     fontWeight: 'bold',
@@ -299,6 +307,7 @@ const styles = StyleSheet.create({
     minHeight: '80%',
     maxHeight: '80%',
     margin: 5,
+    padding: 5,
     borderRadius: 10,
     fontSize: 18,
     fontWeight: 'bold',
