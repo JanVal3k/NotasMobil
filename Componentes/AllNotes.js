@@ -7,15 +7,21 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
+
 import React, { useState, useEffect } from 'react';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import Collapsible from 'react-native-collapsible';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
+import { Modal, Portal, TextInput } from 'react-native-paper';
 
 const AllNotes = () => {
   const [notas, setNotas] = useState([]);
+  const [tituloTexto, setTituloTexto] = useState('');
+  const [notaTexto, setNotaTexto] = useState('');
   const [isCollapsed, setIsCollapsed] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [notaSeleccionada, setNotaSeleccionada] = useState(null);
   const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
   //------------------------------------------
   useEffect(() => {
@@ -33,10 +39,38 @@ const AllNotes = () => {
     }
   }, [estadoGlobal]);
   //------------------------------------------
+  const mostrarModal = (nota) => {
+    setNotaSeleccionada(nota);
+    setTituloTexto(nota.Titulo);
+    setNotaTexto(nota.Contenido);
+    setModalVisible(true);
+  };
+  const ocultarModal = () => {
+    setModalVisible(false);
+  };
+  //------------------------------------------
   const borrarNota = (keyNota) => {
     console.log('esto es el index', keyNota);
     if (GuardarYMostrarNotas.deleteNote(keyNota)) {
       setEstadoGlobal(true);
+    }
+  };
+  //------------------------------------------
+  const editarNota = (btnEditarNota, key, contentTitulo, contentNota) => {
+    if (!contentTitulo.trim()) {
+      Alert.alert('El titulo no puede estar vacio');
+    } else if (!contentNota.trim()) {
+      Alert.alert('El contenido de la nota no puede estar vacio');
+    } else {
+      console.log('esto es el key', key);
+      const btnGuardar = btnEditarNota;
+      btnGuardar.editNota(key, {
+        Titulo: contentTitulo,
+        Contenido: contentNota,
+        Fecha: new Date(),
+      });
+      setEstadoGlobal(true);
+      return btnGuardar;
     }
   };
   //------------------------------------------
@@ -98,7 +132,7 @@ const AllNotes = () => {
                   <View style={styles.viewPressables}>
                     <Pressable
                       style={styles.btnPressable}
-                      onPress={() => console.log('Botón editas')}
+                      onPress={() => mostrarModal(nota)}
                     >
                       <Text style={styles.txtBotones}>✏️</Text>
                     </Pressable>
@@ -121,6 +155,47 @@ const AllNotes = () => {
           </View>
         ))}
       </ScrollView>
+      <Portal>
+        <Modal
+          visible={modalVisible}
+          onDismiss={ocultarModal}
+          contentContainerStyle={styles.contentModal}
+        >
+          {notaSeleccionada && (
+            <View style={styles.viewModal}>
+              <TextInput
+                editable
+                maxLength={44}
+                value={tituloTexto}
+                onChangeText={setTituloTexto}
+                style={styles.txtTituloModal}
+              ></TextInput>
+              <TextInput
+                editable
+                maxLength={1000}
+                multiline={true}
+                value={notaTexto}
+                onChangeText={setNotaTexto}
+                style={styles.txtNotaModal}
+              ></TextInput>
+              <Pressable
+                style={styles.btnModal}
+                onPress={() => {
+                  editarNota(
+                    GuardarYMostrarNotas,
+                    notaSeleccionada.key,
+                    tituloTexto,
+                    notaTexto
+                  );
+                  ocultarModal();
+                }}
+              >
+                <Text style={styles.txtBtnModal}>Guardar</Text>
+              </Pressable>
+            </View>
+          )}
+        </Modal>
+      </Portal>
     </View>
   );
 };
@@ -187,6 +262,71 @@ const styles = StyleSheet.create({
   },
   txtBotones: {
     margin: 1,
+  },
+  contentModal: {
+    width: '90%',
+    height: '90%',
+    margin: 20,
+    borderRadius: 16,
+    backgroundColor: 'white',
+    padding: 10,
+  },
+  viewModal: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingLeft: 10,
+  },
+  txtTituloModal: {
+    width: '94%',
+    height: 50,
+    margin: 5,
+    borderRadius: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  txtNotaModal: {
+    width: '94%',
+    minHeight: '80%',
+    maxHeight: '80%',
+    margin: 5,
+    borderRadius: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  btnModal: {
+    left: '71.5%',
+    width: 80,
+    backgroundColor: '#ff7676',
+    borderRadius: 20,
+    margin: 5,
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  txtBtnModal: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
   },
 });
 

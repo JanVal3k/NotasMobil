@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { PaperProvider } from 'react-native-paper';
 import { useState } from 'react';
 
 //---------------------------------------
@@ -34,29 +35,31 @@ const App2 = () => {
   const [index, setIndex] = useState(0);
   return (
     <ProvedorEstado>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.safeAreaContent}>
-          <StatusBar style="light" />
-          <TabView
-            navigationState={{ index, routes }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            initialLayout={{ width: layout.width }}
-            renderTabBar={(props) => {
-              return <TabBar {...props} style={styles.tabBar} />;
-            }}
-            style={styles.tabBarStyle}
-          />
-          {index === 0 && (
-            <TouchableOpacity
-              style={styles.extraButton}
-              onPress={() => setIndex(1)}
-            >
-              <Text style={styles.extraButtonText}>+</Text>
-            </TouchableOpacity>
-          )}
-        </SafeAreaView>
-      </SafeAreaProvider>
+      <PaperProvider>
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.safeAreaContent}>
+            <StatusBar style="light" />
+            <TabView
+              navigationState={{ index, routes }}
+              renderScene={renderScene}
+              onIndexChange={setIndex}
+              initialLayout={{ width: layout.width }}
+              renderTabBar={(props) => {
+                return <TabBar {...props} style={styles.tabBar} />;
+              }}
+              style={styles.tabBarStyle}
+            />
+            {index === 0 && (
+              <TouchableOpacity
+                style={styles.extraButton}
+                onPress={() => setIndex(1)}
+              >
+                <Text style={styles.extraButtonText}>+</Text>
+              </TouchableOpacity>
+            )}
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </PaperProvider>
     </ProvedorEstado>
   );
 };

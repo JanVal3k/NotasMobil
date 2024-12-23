@@ -15,6 +15,18 @@ const storeData = async (value) => {
   }
 };
 //-------------------------------------
+const editNota = async (key, value) => {
+  try {
+    const jsonValue = JSON.stringify(value);
+    const finalKey = key.startsWith('NotaNumero') ? key : `NotaNumero${key}`;
+    await AsyncStorage.setItem(finalKey, jsonValue);
+    return true;
+  } catch (error) {
+    console.error('Error al editar la nota:', error);
+    throw new Error('No se pudo editar la nota');
+  }
+};
+//-------------------------------------
 
 const getData = async (key) => {
   try {
@@ -113,4 +125,5 @@ export default {
   storeDatepicker,
   getAllTareas,
   getTarea,
+  editNota,
 };
