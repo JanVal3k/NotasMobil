@@ -20,7 +20,7 @@ import { TextInput, Checkbox } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 import { es } from 'date-fns/locale';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 registerTranslation('es', es);
 //------------------------------------------
 //------------------------------------------
@@ -35,6 +35,7 @@ const Calendario = () => {
   const [tituloTexto, setTituloTexto] = useState('');
   const [tareaSelect, setTareaSelect] = useState({});
   const [colors, setColors] = useState({});
+  const [btnBorrarVisible, setBtnBorrarVisible] = useState({});
   //--------------------------------------------
   const abrirCalendario = () => {
     setCalenVisible(true);
@@ -93,14 +94,23 @@ const Calendario = () => {
     }));
     setColors((prevColors) => {
       const updatedColors = { ...prevColors };
-
       if (!prevColors[item.Key]) {
         updatedColors[item.Key] = { txtColor: 'white', bgColor: 'black' };
       } else {
         delete updatedColors[item.Key];
       }
-
       return updatedColors;
+    });
+    setBtnBorrarVisible((prevVisible) => {
+      const updatedVisible = { ...prevVisible };
+
+      if (!prevVisible[item.Key]) {
+        updatedVisible[item.Key] = true;
+      } else {
+        updatedVisible[item.Key] = false;
+      }
+
+      return updatedVisible;
     });
   };
   //------------------------------------------
@@ -147,6 +157,14 @@ const Calendario = () => {
               : 'Sin hora'}{' '}
             ⏰
           </Text>
+          {btnBorrarVisible[item.Key] && (
+            <Pressable
+              style={styles.btnBorrarTarea}
+              onPress={() => console.log('boton borrar para: ', item.Titulo)}
+            >
+              <Text style={styles.txtBorrarTarea}>🗑️</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     );
@@ -376,7 +394,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   contenedorTxtFlat: {
-    width: '80%',
+    width: '70%',
     justifyContent: 'center',
     padding: 5,
   },
@@ -386,6 +404,17 @@ const styles = StyleSheet.create({
   },
   txtsFlats: {
     fontSize: 14,
+  },
+  btnBorrarTarea: {
+    width: 40,
+    height: 40,
+    position: 'absolute',
+    right: -20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  txtBorrarTarea: {
+    fontSize: 20,
   },
 });
 export default Calendario;

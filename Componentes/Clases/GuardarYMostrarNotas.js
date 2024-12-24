@@ -7,9 +7,7 @@ const storeData = async (value) => {
   try {
     const key = uuid.v1();
     const jsonValue = JSON.stringify(value);
-
     await AsyncStorage.setItem(`NotaNumero${key}`, jsonValue);
-    //console.log('esta es la key', key);
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
   }
@@ -60,7 +58,6 @@ const getAllNotes = async () => {
 const deleteNote = async (key) => {
   try {
     await AsyncStorage.removeItem(key);
-    console.log('nota borrada con la key', key);
   } catch (error) {
     Alert.alert('error al borrar la nota', error);
   }
@@ -80,9 +77,7 @@ const storeDatepicker = async (value) => {
   try {
     const key = uuid.v1();
     const jsonValue = JSON.stringify(value);
-
     await AsyncStorage.setItem(`Date${key}`, jsonValue);
-    console.log('este es el contenido de la tarea', value);
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
   }
