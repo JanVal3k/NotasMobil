@@ -76,7 +76,7 @@ const Calendario = () => {
     } else {
       const btnGuardar = clickGuardar;
       btnGuardar.storeDatepicker({
-        Key: Date.now().toString(),
+        dateKey: Date.now().toString(),
         Titulo: titulo,
         Fecha: fecha,
         Hora: tiempo,
@@ -90,29 +90,64 @@ const Calendario = () => {
   const toggleCheck = (item) => {
     setTareaSelect((prev) => ({
       ...prev,
-      [item.Key]: !prev[item.Key],
+      [item.dateKey]: !prev[item.dateKey],
     }));
     setColors((prevColors) => {
       const updatedColors = { ...prevColors };
-      if (!prevColors[item.Key]) {
-        updatedColors[item.Key] = { txtColor: 'white', bgColor: 'black' };
+      if (!prevColors[item.dateKey]) {
+        updatedColors[item.dateKey] = { txtColor: 'white', bgColor: 'black' };
       } else {
-        delete updatedColors[item.Key];
+        delete updatedColors[item.dateKey];
       }
       return updatedColors;
     });
     setBtnBorrarVisible((prevVisible) => {
       const updatedVisible = { ...prevVisible };
 
-      if (!prevVisible[item.Key]) {
-        updatedVisible[item.Key] = true;
+      if (!prevVisible[item.dateKey]) {
+        updatedVisible[item.dateKey] = true;
       } else {
-        updatedVisible[item.Key] = false;
+        updatedVisible[item.dateKey] = false;
       }
 
       return updatedVisible;
     });
   };
+  //------------------------------------------
+  // const borrarTodo = () => {
+  //   GuardarYMostrarNotas.borrarTodoStorage();
+  //   setEstadoGlobal(true);
+  // };
+  //------------------------------------------
+  const borrarTarea = (keyNota) => {
+    if (GuardarYMostrarNotas.deleteTarea(keyNota)) {
+      setEstadoGlobal(true);
+    }
+  };
+  //------------------------------------------
+  const tareaSiyNo = (key) => {
+    Alert.alert(
+      'Esta acción no se puede deshacer.',
+      '¿Estás seguro que quiere borrar la tarea?',
+      [
+        {
+          text: 'NO',
+          onPress: () => console.log('Presionaste NO'),
+          style: 'cancel',
+        },
+        {
+          text: 'SI',
+          onPress: () => {
+            if (borrarTarea(key)) {
+              setEstadoGlobal(true);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
   //------------------------------------------
   const borrarTxtFechyHora = () => {
     setTituloTexto(''), setUseFecha(new Date());
@@ -120,7 +155,7 @@ const Calendario = () => {
   };
   //------------------------------------------
   const renderItem = ({ item }) => {
-    const colorStyles = colors[item.Key] || {
+    const colorStyles = colors[item.dateKey] || {
       txtColor: 'black',
       bgColor: 'white',
     };
@@ -133,7 +168,7 @@ const Calendario = () => {
       >
         <View style={styles.contenedorCheckbox}>
           <Checkbox
-            status={tareaSelect[item.Key] ? 'checked' : 'unchecked'}
+            status={tareaSelect[item.dateKey] ? 'checked' : 'unchecked'}
             onPress={() => toggleCheck(item)}
           />
         </View>
@@ -157,10 +192,10 @@ const Calendario = () => {
               : 'Sin hora'}{' '}
             ⏰
           </Text>
-          {btnBorrarVisible[item.Key] && (
+          {btnBorrarVisible[item.dateKey] && (
             <Pressable
               style={styles.btnBorrarTarea}
-              onPress={() => console.log('boton borrar para: ', item.Titulo)}
+              onPress={() => tareaSiyNo(item.Key)}
             >
               <Text style={styles.txtBorrarTarea}>🗑️</Text>
             </Pressable>
@@ -170,6 +205,7 @@ const Calendario = () => {
     );
   };
   //------------------------------------------
+
   return (
     <View style={styles.viewContainer}>
       <StatusBar style="light" />
@@ -186,6 +222,12 @@ const Calendario = () => {
       >
         <Text style={styles.extraButtonText}>+</Text>
       </TouchableOpacity>
+      {/* <TouchableOpacity
+        style={styles.extraButton2}
+        onPress={() => borrarTodo()}
+      >
+        <Text style={styles.extraButtonText}>borrar todo</Text>
+      </TouchableOpacity> */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -276,6 +318,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     top: -50,
     right: -130,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    height: 60,
+    backgroundColor: '#5C6570',
+  },
+  extraButton2: {
+    borderRadius: 12,
+    top: -50,
+    right: -100,
     justifyContent: 'center',
     alignItems: 'center',
     width: 60,
@@ -406,6 +458,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   btnBorrarTarea: {
+    zIndex: 10,
     width: 40,
     height: 40,
     position: 'absolute',

@@ -78,6 +78,7 @@ const storeDatepicker = async (value) => {
     const key = uuid.v1();
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem(`Date${key}`, jsonValue);
+    console.log('esta es la key al crear la tarea:', key);
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
   }
@@ -99,15 +100,50 @@ const getAllTareas = async () => {
     const tareas = await Promise.all(
       tareaKeys.map(async (key) => {
         const tarea = await getTarea(key.replace('Date', ''));
-        return { ...tarea, key };
+        return {
+          ...tarea,
+          Key: key,
+        };
       })
     );
     return tareas
-      .filter((nota) => nota !== null)
-      .sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha));
+      .filter((tarea) => tarea !== null)
+      .sort((a, b) => {
+        const fechaA = a.Fecha?.startDate || new Date(0);
+        const fechaB = b.Fecha?.startDate || new Date(0);
+        return new Date(fechaB) - new Date(fechaA);
+      });
   } catch (e) {
     console.error('Error recuperando todas las tareas', e);
     return [];
+  }
+};
+//-------------------------------------
+const deleteTarea = async (key) => {
+  console.log('Intentando borrar key:', key);
+  try {
+    const fullKey = key.startsWith('Date') ? key : `Date${key}`;
+    console.log('Key completa para borrar:', fullKey);
+    await AsyncStorage.removeItem(fullKey);
+    console.log('Tarea borrada exitosamente');
+    return true;
+  } catch (error) {
+    console.error('Error al borrar:', error);
+    Alert.alert('Error al borrar la tarea', error.message);
+    return false;
+  }
+};
+//-------------------------------------
+const borrarTodoStorage = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    const tareaKeys = keys.filter((key) => key.startsWith('Date'));
+    await AsyncStorage.multiRemove(tareaKeys);
+
+    Alert.alert('Éxito', 'Todas las tareas han sido borradas');
+  } catch (error) {
+    Alert.alert('Error', 'No se pudieron borrar las tareas');
+    console.error('Error al borrar tareas:', error);
   }
 };
 //-------------------------------------
@@ -121,4 +157,6 @@ export default {
   getAllTareas,
   getTarea,
   editNota,
+  deleteTarea,
+  borrarTodoStorage,
 };
