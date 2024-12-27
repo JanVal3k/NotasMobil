@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import uuid from 'react-native-uuid';
 import { Alert } from 'react-native';
+import NotificacionesService from './crearNotificaciones';
 
 const storeData = async (value) => {
   try {
@@ -78,7 +79,6 @@ const storeDatepicker = async (value) => {
     const key = uuid.v1();
     const jsonValue = JSON.stringify(value);
     await AsyncStorage.setItem(`Date${key}`, jsonValue);
-    console.log('esta es la key al crear la tarea:', key);
   } catch (e) {
     throw new Error('No se pudo recuperar el dato');
   }
@@ -120,12 +120,9 @@ const getAllTareas = async () => {
 };
 //-------------------------------------
 const deleteTarea = async (key) => {
-  console.log('Intentando borrar key:', key);
   try {
     const fullKey = key.startsWith('Date') ? key : `Date${key}`;
-    console.log('Key completa para borrar:', fullKey);
     await AsyncStorage.removeItem(fullKey);
-    console.log('Tarea borrada exitosamente');
     return true;
   } catch (error) {
     console.error('Error al borrar:', error);

@@ -5,7 +5,6 @@ import {
   Text,
   View,
   StatusBar,
-  ScrollView,
   Modal,
   TouchableOpacity,
   Alert,
@@ -19,8 +18,9 @@ import {
 import { TextInput, Checkbox } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
+import * as Notification from 'expo-notifications';
 import { es } from 'date-fns/locale';
-import { format, set } from 'date-fns';
+import { format, addDays, isAfter, isBefore, startOfDay } from 'date-fns';
 registerTranslation('es', es);
 //------------------------------------------
 //------------------------------------------
@@ -83,7 +83,23 @@ const Calendario = () => {
       });
       borrarTxtFechyHora();
       setEstadoGlobal(true);
+      crearNotificacion;
       return btnGuardar;
+    }
+  };
+  //------------------------------------------
+  const crearNotificacion = async (tarea) => {
+    const trigger = new Date(tarea.Fecha);
+    try {
+      await Notification.scheduleNotificationAsync({
+        content: {
+          title: 'Tarea!!',
+          body: tarea.Title,
+        },
+        trigger,
+      });
+    } catch (e) {
+      Alert.alert('fecha o hora con fecha vencida');
     }
   };
   //------------------------------------------
@@ -279,6 +295,7 @@ const Calendario = () => {
                     useFecha,
                     useTiempo
                   );
+
                   cerrarModal();
                 }}
               >

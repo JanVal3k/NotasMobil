@@ -8,7 +8,9 @@ import {
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { PaperProvider } from 'react-native-paper';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
 
 //---------------------------------------
 import AllNotes from './AllNotes';
@@ -30,9 +32,40 @@ const routes = [
   { key: 'second', title: 'Nueva Nota' },
   { key: 'third', title: 'Tareas' },
 ];
-const App2 = () => {
+//--------------------------------------
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+//--------------------------------------
+const requestNotificationPermissions = async () => {
+  if (Device.isDevice) {
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+    if (finalStatus !== 'granted') {
+      alert('No podremos mostrar notificaciones sin tu permiso');
+      return false;
+    }
+    return true;
+  }
+  alert('Las notificaciones solo funcionan en dispositivos físicos');
+  return false;
+};
+//--------------------------------------
+const App = () => {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
+  useEffect(() => {
+    requestNotificationPermissions();
+  }, []);
   return (
     <ProvedorEstado>
       <PaperProvider>
@@ -87,4 +120,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-export default App2;
+export default App;
