@@ -18,9 +18,9 @@ import {
 import { TextInput, Checkbox } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
-import * as Notification from 'expo-notifications';
+import NotificacionesService from './Clases/crearNotificaciones';
 import { es } from 'date-fns/locale';
-import { format, addDays, isAfter, isBefore, startOfDay } from 'date-fns';
+import { format } from 'date-fns';
 registerTranslation('es', es);
 //------------------------------------------
 //------------------------------------------
@@ -55,6 +55,25 @@ const Calendario = () => {
     setTimerVisible(false);
   };
   //--------------------------------------------
+  registerTranslation('es', {
+    save: 'Guardar',
+    selectSingle: 'Seleccionar fecha',
+    selectMultiple: 'Seleccionar fechas',
+    selectRange: 'Seleccionar rango',
+    notAccordingToDateFormat: (inputFormat) =>
+      `El formato de fecha debe ser ${inputFormat}`,
+    mustBeHigherThan: (date) => `Debe ser posterior a ${date}`,
+    mustBeLowerThan: (date) => `Debe ser anterior a ${date}`,
+    mustBeBetween: (startDate, endDate) =>
+      `Debe estar entre ${startDate} - ${endDate}`,
+    dateIsDisabled: 'Día no permitido',
+    previous: 'Anterior',
+    next: 'Siguiente',
+    typeInDate: 'Escribir fecha',
+    pickDateFromCalendar: 'Seleccionar fecha del calendario',
+    close: 'Cerrar',
+  });
+  //--------------------------------------------
   useEffect(() => {
     GuardarYMostrarNotas.getAllTareas().then((tareasTraidas) => {
       setTareas(tareasTraidas);
@@ -70,36 +89,33 @@ const Calendario = () => {
     }
   }, [estadoGlobal]);
   //------------------------------------------
-  const GuardarTareas = (clickGuardar, titulo, fecha, tiempo) => {
+  const GuardarTareas = async (clickGuardar, titulo, fecha, tiempo) => {
     if (!titulo.trim()) {
       Alert.alert('El nombre de la tarea no puede estar vacio');
-    } else {
-      const btnGuardar = clickGuardar;
-      btnGuardar.storeDatepicker({
+      return;
+    }
+    try {
+      const tarea = {
         dateKey: Date.now().toString(),
         Titulo: titulo,
         Fecha: fecha,
         Hora: tiempo,
-      });
+      };
+      const btnGuardar = clickGuardar;
+      await btnGuardar.storeDatepicker(tarea);
+
+      const resultadoNotificaciones =
+        await NotificacionesService.programarNotificacionesTarea(tarea);
+
+      if (!resultadoNotificaciones.success) {
+        Alert.alert('Advertencia:', resultadoNotificaciones.message);
+      }
       borrarTxtFechyHora();
       setEstadoGlobal(true);
-      crearNotificacion;
       return btnGuardar;
-    }
-  };
-  //------------------------------------------
-  const crearNotificacion = async (tarea) => {
-    const trigger = new Date(tarea.Fecha);
-    try {
-      await Notification.scheduleNotificationAsync({
-        content: {
-          title: 'Tarea!!',
-          body: tarea.Title,
-        },
-        trigger,
-      });
-    } catch (e) {
-      Alert.alert('fecha o hora con fecha vencida');
+    } catch (error) {
+      Alert.alert('Error', 'No se pudo guardar la tarea');
+      console.error('Error al guardar tarea:', error);
     }
   };
   //------------------------------------------
