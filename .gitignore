@@ -10,7 +10,9 @@ web-build/
 expo-env.d.ts
 android/.gradle/
 android/app/.cxx/
-
+android/.gradle/
+android/app/build/
+android/build/
 # Native
 *.orig.*
 *.jks
