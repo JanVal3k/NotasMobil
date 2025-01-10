@@ -146,10 +146,10 @@ const Calendario = () => {
     });
   };
   //------------------------------------------
-  // const borrarTodo = () => {
-  //   GuardarYMostrarNotas.borrarTodoStorage();
-  //   setEstadoGlobal(true);
-  // };
+  const borrarTodo = () => {
+    GuardarYMostrarNotas.borrarTodoStorage();
+    setEstadoGlobal(true);
+  };
   //------------------------------------------
   const borrarTarea = (keyNota) => {
     if (GuardarYMostrarNotas.deleteTarea(keyNota)) {
@@ -254,12 +254,12 @@ const Calendario = () => {
       >
         <Text style={styles.extraButtonText}>+</Text>
       </TouchableOpacity>
-      {/* <TouchableOpacity
+      <TouchableOpacity
         style={styles.extraButton2}
         onPress={() => borrarTodo()}
       >
         <Text style={styles.extraButtonText}>borrar todo</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
