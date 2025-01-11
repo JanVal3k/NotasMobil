@@ -77,10 +77,16 @@ const deleteAllNotes = async () => {
 const storeDatepicker = async (value) => {
   try {
     const key = uuid.v1();
-    const jsonValue = JSON.stringify(value);
+    const tareaToStore = {
+      ...value,
+      Fecha:
+        value.Fecha instanceof Date ? value.Fecha.toISOString() : value.Fecha,
+    };
+    const jsonValue = JSON.stringify(tareaToStore);
     await AsyncStorage.setItem(`Date${key}`, jsonValue);
   } catch (e) {
-    throw new Error('No se pudo recuperar el dato');
+    console.error('Error guardando tarea:', e);
+    throw new Error('No se pudo guardar el dato');
   }
 };
 //-------------------------------------
@@ -100,19 +106,19 @@ const getAllTareas = async () => {
     const tareas = await Promise.all(
       tareaKeys.map(async (key) => {
         const tarea = await getTarea(key.replace('Date', ''));
-        return {
-          ...tarea,
-          Key: key,
-        };
+        if (tarea) {
+          return {
+            ...tarea,
+            Fecha: new Date(tarea.Fecha),
+            Key: key,
+          };
+        }
+        return null;
       })
     );
     return tareas
       .filter((tarea) => tarea !== null)
-      .sort((a, b) => {
-        const fechaA = a.Fecha?.startDate || new Date(0);
-        const fechaB = b.Fecha?.startDate || new Date(0);
-        return new Date(fechaB) - new Date(fechaA);
-      });
+      .sort((a, b) => new Date(b.Fecha) - new Date(a.Fecha));
   } catch (e) {
     console.error('Error recuperando todas las tareas', e);
     return [];

@@ -1,124 +1,136 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet,
-  Pressable,
-  Text,
   View,
-  StatusBar,
   Modal,
-  TouchableOpacity,
+  Text,
+  Pressable,
   Alert,
+  TouchableOpacity,
   FlatList,
+  StatusBar,
+  StyleSheet,
 } from 'react-native';
-import {
-  DatePickerModal,
-  registerTranslation,
-  TimePickerModal,
-} from 'react-native-paper-dates';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { TextInput, Checkbox } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 import NotificacionesService from './Clases/crearNotificaciones';
 import { es } from 'date-fns/locale';
 import { format } from 'date-fns';
-registerTranslation('es', es);
 //------------------------------------------
 //------------------------------------------
+
 const Calendario = () => {
   const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
   const [tareas, setTareas] = useState([]);
   const [nuevaTarea, setNuevaTarea] = useState(false);
   const [useFecha, setUseFecha] = useState(new Date());
-  const [useTiempo, setUseTiempo] = useState({});
-  const [calenVisible, setCalenVisible] = useState(false);
-  const [timerVisible, setTimerVisible] = useState(false);
+  const [useTiempo, setUseTiempo] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [tituloTexto, setTituloTexto] = useState('');
   const [tareaSelect, setTareaSelect] = useState({});
   const [colors, setColors] = useState({});
   const [btnBorrarVisible, setBtnBorrarVisible] = useState({});
-  //--------------------------------------------
+
   const abrirCalendario = () => {
-    setCalenVisible(true);
+    setShowDatePicker(true);
   };
+
   const abrirTimer = () => {
-    setTimerVisible(true);
+    setShowTimePicker(true);
   };
+  const onChangeFecha = (event, selectedDate) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      setUseFecha(selectedDate);
+    }
+  };
+  //---------------------------------
+  useEffect(() => {
+    if (estadoGlobal) {
+      const actualizarTareas = async () => {
+        try {
+          const tareasActualizadas = await GuardarYMostrarNotas.getAllTareas();
+          setTareas(tareasActualizadas);
+          setEstadoGlobal(false);
+        } catch (error) {
+          console.error('Error actualizando tareas:', error);
+        }
+      };
+
+      actualizarTareas();
+    }
+  }, [estadoGlobal]);
+  //---------------------------------
+  useEffect(() => {
+    const cargarTareas = async () => {
+      try {
+        const tareasGuardadas = await GuardarYMostrarNotas.getAllTareas();
+        setTareas(tareasGuardadas);
+      } catch (error) {
+        console.error('Error cargando tareas:', error);
+      }
+    };
+
+    cargarTareas();
+  }, []);
+  //---------------------------------
+  const onChangeTiempo = (event, selectedTime) => {
+    setShowTimePicker(false);
+    if (selectedTime) {
+      setUseTiempo(selectedTime);
+    }
+  };
+  //---------------------------------
   const cerrarModal = () => {
     setNuevaTarea(false);
   };
-  const onConfirmDate = (date) => {
-    setUseFecha(date);
-    setCalenVisible(false);
-  };
-  const onConfirmTimer = (Tiempo) => {
-    setUseTiempo({ Tiempo });
-    setTimerVisible(false);
-  };
-  //--------------------------------------------
-  registerTranslation('es', {
-    save: 'Guardar',
-    selectSingle: 'Seleccionar fecha',
-    selectMultiple: 'Seleccionar fechas',
-    selectRange: 'Seleccionar rango',
-    notAccordingToDateFormat: (inputFormat) =>
-      `El formato de fecha debe ser ${inputFormat}`,
-    mustBeHigherThan: (date) => `Debe ser posterior a ${date}`,
-    mustBeLowerThan: (date) => `Debe ser anterior a ${date}`,
-    mustBeBetween: (startDate, endDate) =>
-      `Debe estar entre ${startDate} - ${endDate}`,
-    dateIsDisabled: 'Día no permitido',
-    previous: 'Anterior',
-    next: 'Siguiente',
-    typeInDate: 'Escribir fecha',
-    pickDateFromCalendar: 'Seleccionar fecha del calendario',
-    close: 'Cerrar',
-  });
-  //--------------------------------------------
-  useEffect(() => {
-    GuardarYMostrarNotas.getAllTareas().then((tareasTraidas) => {
-      setTareas(tareasTraidas);
-    });
-  }, []);
-  //------------------------------------------
-  useEffect(() => {
-    if (estadoGlobal) {
-      GuardarYMostrarNotas.getAllTareas().then((tareasTraidas) => {
-        setTareas(tareasTraidas);
-        setEstadoGlobal(false);
-      });
-    }
-  }, [estadoGlobal]);
-  //------------------------------------------
-  const GuardarTareas = async (clickGuardar, titulo, fecha, tiempo) => {
+
+  const GuardarTareas = async (storageService, titulo, fecha, tiempo) => {
     if (!titulo.trim()) {
-      Alert.alert('El nombre de la tarea no puede estar vacio');
+      Alert.alert('El nombre de la tarea no puede estar vacío');
       return;
     }
     try {
+      const fechaValida = fecha instanceof Date ? fecha : new Date(fecha);
+
+      if (isNaN(fechaValida.getTime())) {
+        Alert.alert('Error', 'La fecha seleccionada no es válida');
+        return;
+      }
+
       const tarea = {
         dateKey: Date.now().toString(),
+        Key: Date.now().toString(),
         Titulo: titulo,
-        Fecha: fecha,
-        Hora: tiempo,
+        Fecha: fechaValida,
+        Hora: {
+          Tiempo: {
+            hours: tiempo.getHours(),
+            minutes: tiempo.getMinutes(),
+          },
+        },
       };
-      const btnGuardar = clickGuardar;
-      await btnGuardar.storeDatepicker(tarea);
+
+      await NotificacionesService.cancelarTodasLasNotificaciones();
+      await storageService.storeDatepicker(tarea);
 
       const resultadoNotificaciones =
-        await NotificacionesService.programarNotificacionesTarea(tarea);
+        await NotificacionesService.programarNotificacion(tarea);
 
       if (!resultadoNotificaciones.success) {
         Alert.alert('Advertencia:', resultadoNotificaciones.message);
       }
+
       borrarTxtFechyHora();
       setEstadoGlobal(true);
-      return btnGuardar;
     } catch (error) {
       Alert.alert('Error', 'No se pudo guardar la tarea');
       console.error('Error al guardar tarea:', error);
     }
   };
-  //------------------------------------------
+
   const toggleCheck = (item) => {
     setTareaSelect((prev) => ({
       ...prev,
@@ -145,18 +157,13 @@ const Calendario = () => {
       return updatedVisible;
     });
   };
-  //------------------------------------------
-  const borrarTodo = () => {
-    GuardarYMostrarNotas.borrarTodoStorage();
-    setEstadoGlobal(true);
-  };
-  //------------------------------------------
+
   const borrarTarea = (keyNota) => {
     if (GuardarYMostrarNotas.deleteTarea(keyNota)) {
       setEstadoGlobal(true);
     }
   };
-  //------------------------------------------
+
   const tareaSiyNo = (key) => {
     Alert.alert(
       'Esta acción no se puede deshacer.',
@@ -180,17 +187,33 @@ const Calendario = () => {
     );
   };
 
-  //------------------------------------------
   const borrarTxtFechyHora = () => {
-    setTituloTexto(''), setUseFecha(new Date());
-    setUseTiempo({});
+    setTituloTexto('');
+    setUseFecha(new Date());
+    setUseTiempo(new Date());
   };
-  //------------------------------------------
+
   const renderItem = ({ item }) => {
     const colorStyles = colors[item.dateKey] || {
       txtColor: 'black',
       bgColor: 'white',
     };
+    //------------------------------------
+    const formatearFecha = (fecha) => {
+      try {
+        return format(new Date(fecha), 'dd/MM/yyyy');
+      } catch (error) {
+        console.error('Error al formatear fecha:', error);
+        return 'Fecha inválida';
+      }
+    };
+    //------------------------------------
+    const formatearHora = (hora) => {
+      if (!hora?.Tiempo) return 'Sin hora';
+      const { hours, minutes } = hora.Tiempo;
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    };
+
     return (
       <View
         style={[
@@ -209,20 +232,10 @@ const Calendario = () => {
             Titulo: {item.Titulo}
           </Text>
           <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
-            {item.Fecha.startDate
-              ? `Inicio:  ${format(item.Fecha.startDate, 'dd/MM/yyyy')}`
-              : 'Sin fecha inicial'}
+            Fecha: {formatearFecha(item.Fecha)}
           </Text>
           <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
-            {item.Fecha.endDate
-              ? `Fin:  ${format(item.Fecha.endDate, 'dd/MM/yyyy')}`
-              : 'Sin fecha final'}
-          </Text>
-          <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
-            {item.Hora?.Tiempo?.hours
-              ? `Hora: ${item.Hora.Tiempo.hours}:${item.Hora.Tiempo.minutes}`
-              : 'Sin hora'}{' '}
-            ⏰
+            {formatearHora(item.Hora)} ⏰
           </Text>
           {btnBorrarVisible[item.dateKey] && (
             <Pressable
@@ -236,7 +249,6 @@ const Calendario = () => {
       </View>
     );
   };
-  //------------------------------------------
 
   return (
     <View style={styles.viewContainer}>
@@ -254,18 +266,12 @@ const Calendario = () => {
       >
         <Text style={styles.extraButtonText}>+</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.extraButton2}
-        onPress={() => borrarTodo()}
-      >
-        <Text style={styles.extraButtonText}>borrar todo</Text>
-      </TouchableOpacity>
+
       <Modal
         animationType="slide"
         transparent={true}
         visible={nuevaTarea}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setNuevaTarea(!nuevaTarea);
         }}
       >
@@ -281,27 +287,52 @@ const Calendario = () => {
                 value={tituloTexto}
                 style={styles.txtTitle}
               />
+
               <Text style={styles.txtFechayHora}>
-                Aqui va la hora o la fecha
+                {format(useFecha, 'dd/MM/yyyy')} y {format(useTiempo, 'HH:mm')}
               </Text>
+
               <Pressable
                 style={[styles.button, styles.pressableBtns]}
-                onPress={() => abrirCalendario()}
+                onPress={abrirCalendario}
               >
                 <Text style={styles.txtPressables}>📅</Text>
               </Pressable>
+
               <Pressable
                 style={[styles.button, styles.pressableBtns]}
-                onPress={() => abrirTimer()}
+                onPress={abrirTimer}
               >
                 <Text style={styles.txtPressables}>⏰</Text>
               </Pressable>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={useFecha}
+                  mode="date"
+                  display="default"
+                  onChange={onChangeFecha}
+                  locale="es"
+                />
+              )}
+
+              {showTimePicker && (
+                <DateTimePicker
+                  value={useTiempo}
+                  mode="time"
+                  display="default"
+                  onChange={onChangeTiempo}
+                  locale="es"
+                />
+              )}
+
               <Pressable
                 style={[styles.button, styles.pressableBtns]}
-                onPress={() => cerrarModal()}
+                onPress={cerrarModal}
               >
                 <Text style={styles.txtPressablesClose}>X</Text>
               </Pressable>
+
               <Pressable
                 style={[styles.button, styles.btnGuaradar]}
                 onPress={() => {
@@ -311,7 +342,6 @@ const Calendario = () => {
                     useFecha,
                     useTiempo
                   );
-
                   cerrarModal();
                 }}
               >
@@ -321,22 +351,6 @@ const Calendario = () => {
           </View>
         </View>
       </Modal>
-      <DatePickerModal
-        animationType="slide"
-        locale="es"
-        mode="range"
-        visible={calenVisible}
-        onDismiss={() => setCalenVisible(false)}
-        onConfirm={(date) => onConfirmDate(date)}
-        date={useFecha}
-      />
-      <TimePickerModal
-        visible={timerVisible}
-        onDismiss={() => setTimerVisible(false)}
-        onConfirm={(Tiempo) => onConfirmTimer(Tiempo)}
-        hours={12}
-        minutes={14}
-      />
     </View>
   );
 };
@@ -467,7 +481,7 @@ const styles = StyleSheet.create({
   ContenedorFlatList: {
     flex: 1,
     padding: 10,
-    width: '97 %',
+    width: '97%',
     margin: 5,
     borderRadius: 12,
     justifyContent: 'center',

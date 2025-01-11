@@ -27,7 +27,8 @@
     "react-native-uuid": "^2.0.3",
     "react-native-vector-icons": "^10.2.0",
     "expo-notifications": "~0.29.11",
-    "expo-device": "~7.0.1"
+    "expo-device": "~7.0.1",
+    "@react-native-community/datetimepicker": "8.2.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.26.4",
