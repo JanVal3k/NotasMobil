@@ -235,7 +235,7 @@ const Calendario = () => {
             Fecha: {formatearFecha(item.Fecha)}
           </Text>
           <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
-            {formatearHora(item.Hora)} ⏰
+            Hora: {formatearHora(item.Hora)} ⏰
           </Text>
           {btnBorrarVisible[item.dateKey] && (
             <Pressable
