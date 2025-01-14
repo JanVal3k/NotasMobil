@@ -6,9 +6,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Image,
 } from 'react-native';
 import React, { useState } from 'react';
-import { TextInput } from 'react-native-paper';
+import { TextInput, Portal, Modal } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 
@@ -16,7 +17,7 @@ const NewNote = () => {
   const [tituloTexto, setTituloTexto] = useState('');
   const [notaTexto, setNotaTexto] = useState('');
   const [fondo, setFondo] = useState('#000');
-  const [pickerActivo, setPickerActivo] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const { setEstadoGlobal } = useEstadoGlobal();
   const [fecha, setFecha] = useState();
   //--------------------------------------------
@@ -45,6 +46,13 @@ const NewNote = () => {
     setTituloTexto('');
   };
   //--------------------------------------------
+  const mostrarModal = () => {
+    setModalVisible(true);
+  };
+  const ocultarModal = () => {
+    setModalVisible(false);
+  };
+
   const guardarFecha = () => {
     const objetoFecha = new Date();
     setFecha(objetoFecha);
@@ -78,7 +86,7 @@ const NewNote = () => {
             style={styles.txtNota}
           />
           <View style={styles.viewBtns}>
-            <Pressable onPress={() => guardarFecha()} style={styles.btnContent}>
+            <Pressable onPress={() => mostrarModal()} style={styles.btnContent}>
               <Text style={styles.txtBoton}>✏️</Text>
             </Pressable>
             <Pressable
@@ -94,6 +102,112 @@ const NewNote = () => {
           </View>
         </View>
       </KeyboardAvoidingView>
+      <Portal>
+        <Modal
+          visible={modalVisible}
+          onDismiss={ocultarModal}
+          contentContainerStyle={styles.contentModal}
+        >
+          <View style={styles.viewModal}>
+            <View style={styles.ViewTopModal}>
+              <Pressable
+                style={styles.btnModal}
+                onPress={() => {
+                  console.log('De momento dejo esto aqui');
+                }}
+              >
+                <Text style={styles.txtBtnModal}>
+                  <Image
+                    style={styles.imgBtnModa}
+                    source={require('../assets/EsquinasRedondas.png')}
+                  />
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.btnModal}
+                onPress={() => {
+                  console.log('De momento dejo esto aqui');
+                }}
+              >
+                <Text style={styles.txtBtnModal}>
+                  <Image
+                    style={styles.imgBtnModa}
+                    source={require('../assets/EsquinasRectas.png')}
+                  />
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.btnModal}
+                onPress={() => {
+                  console.log('De momento dejo esto aqui');
+                }}
+              >
+                <Text style={styles.txtBtnModal}>
+                  <Image
+                    style={styles.imgBtnModa}
+                    source={require('../assets/LineaDelgada.png')}
+                  />
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.btnModal}
+                onPress={() => {
+                  console.log('De momento dejo esto aqui');
+                }}
+              >
+                <Text style={styles.txtBtnModal}>
+                  <Image
+                    style={styles.imgBtnModa}
+                    source={require('../assets/LineaGruesa.png')}
+                  />
+                </Text>
+              </Pressable>
+            </View>
+            <View style={styles.ViewButtomModal}>
+              <Pressable
+                style={[styles.btnModal, { backgroundColor: '#7A8D9B' }]}
+                onPress={() => {
+                  console.log('De momento dejo esto aqui');
+                }}
+              >
+                <Text></Text>
+              </Pressable>
+              <Pressable
+                style={[styles.btnModal, { backgroundColor: '#B2B9BF' }]}
+                onPress={() => {
+                  console.log('De momento dejo esto aqui');
+                }}
+              >
+                <Text></Text>
+              </Pressable>
+              <Pressable
+                style={[styles.btnModal, { backgroundColor: '#EED0C6' }]}
+                onPress={() => {
+                  console.log('De momento dejo esto aqui');
+                }}
+              >
+                <Text></Text>
+              </Pressable>
+              <Pressable
+                style={[styles.btnModal, { backgroundColor: '#DABEB6' }]}
+                onPress={() => {
+                  console.log('De momento dejo esto aqui');
+                }}
+              >
+                <Text></Text>
+              </Pressable>
+            </View>
+          </View>
+          <Pressable
+            style={styles.btnModalGuaradar}
+            onPress={() => {
+              console.log('De momento dejo esto aqui');
+            }}
+          >
+            <Text style={styles.txtBtnModalGuardad}>guardar</Text>
+          </Pressable>
+        </Modal>
+      </Portal>
     </View>
   );
 };
@@ -146,6 +260,71 @@ const styles = StyleSheet.create({
   },
   txtBoton: {
     fontSize: 20,
+    fontWeight: 'bold',
+  },
+  contentModal: {
+    width: '90%',
+    height: '35%',
+    margin: 20,
+    borderRadius: 16,
+    backgroundColor: 'white',
+    padding: 10,
+  },
+  viewModal: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  btnModal: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    margin: 5,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  imgBtnModa: {
+    flex: 1,
+  },
+  ViewTopModal: {
+    flexDirection: 'row',
+  },
+  ViewButtomModal: {
+    flexDirection: 'row',
+  },
+  btnModalGuaradar: {
+    top: 240,
+    left: 220,
+    zIndex: 1,
+    position: 'absolute',
+    width: 90,
+    height: 35,
+    backgroundColor: 'blue',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  txtBtnModalGuardad: {
+    fontSize: 18,
+    color: '#fff',
     fontWeight: 'bold',
   },
 });
