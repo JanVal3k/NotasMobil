@@ -6,10 +6,8 @@ class NotificacionesService {
     try {
       const { Titulo, Fecha, Hora } = tarea;
 
-      // Crear nueva fecha objetivo
       let fechaObjetivo = new Date(Fecha);
 
-      // Establecer la hora usando el nuevo formato
       if (Hora && Hora.Tiempo) {
         fechaObjetivo.setHours(Hora.Tiempo.hours);
         fechaObjetivo.setMinutes(Hora.Tiempo.minutes);
@@ -17,7 +15,6 @@ class NotificacionesService {
         fechaObjetivo.setMilliseconds(0);
       }
 
-      // Verificar si la fecha es futura
       const ahora = new Date();
       if (fechaObjetivo <= ahora) {
         return {

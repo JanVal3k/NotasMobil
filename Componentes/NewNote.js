@@ -15,7 +15,7 @@ import { useEstadoGlobal } from './Clases/hookCambioEstado';
 const NewNote = () => {
   const [tituloTexto, setTituloTexto] = useState('');
   const [notaTexto, setNotaTexto] = useState('');
-  const [color, setColor] = useState('#7B8796');
+  const [fondo, setFondo] = useState('#000');
   const [pickerActivo, setPickerActivo] = useState(false);
   const { setEstadoGlobal } = useEstadoGlobal();
   const [fecha, setFecha] = useState();
