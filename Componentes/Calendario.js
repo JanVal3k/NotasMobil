@@ -117,7 +117,8 @@ const Calendario = () => {
       await storageService.storeDatepicker(tarea);
 
       const resultadoNotificaciones =
-        await NotificacionesService.programarNotificacion(tarea);
+        //await NotificacionesService.programarNotificacion(tarea);
+        await NotificacionesService.testNotificacionSimple();
 
       if (!resultadoNotificaciones.success) {
         Alert.alert('Advertencia:', resultadoNotificaciones.message);

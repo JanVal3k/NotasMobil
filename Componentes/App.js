@@ -19,6 +19,17 @@ import Calendario from './Calendario';
 import { ProvedorEstado } from './Clases/hookCambioEstado';
 
 //---------------------------------------
+async function configurarCanal() {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+}
+//---------------------------------------
 
 const MostrarAllNotes = () => <AllNotes />;
 const MostrarNewNote = () => <NewNote />;
@@ -38,6 +49,8 @@ Notifications.setNotificationHandler({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
+    priority: 'high',
+    channelId: 'default',
   }),
 });
 //--------------------------------------
@@ -63,6 +76,18 @@ const requestNotificationPermissions = async () => {
 const App = () => {
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
+  //listener--------------
+  useEffect(() => {
+    configurarCanal();
+    const subscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log('NOTIFICACIÓN RECIBIDA:', notification);
+      }
+    );
+
+    return () => subscription.remove();
+  }, []);
+  //listener--------------
   useEffect(() => {
     requestNotificationPermissions();
   }, []);

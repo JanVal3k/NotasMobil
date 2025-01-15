@@ -28,12 +28,13 @@ class NotificacionesService {
       const id = await Notifications.scheduleNotificationAsync({
         content: {
           title: '¡Recordatorio de Tarea!',
-          body: `${Titulo}`,
+          body: `titulo: ${Titulo} y fecha: ${fechaObjetivo}`,
           sound: true,
           priority: Notifications.AndroidNotificationPriority.HIGH,
         },
         trigger: {
-          date: fechaObjetivo,
+          type: Notifications.SchedulableTriggerInputTypes.DATETIME,
+          timestamp: fechaObjetivo.getTime(),
         },
       });
 
@@ -51,6 +52,54 @@ class NotificacionesService {
     }
   }
 
+  //-----------------------------------------------
+  static async testNotificacionSimple() {
+    try {
+      const ahora = new Date();
+      console.log('Hora actual:', ahora.toLocaleString());
+
+      // Calculamos el timestamp para 2 minutos después
+      const enDosMinutos = new Date(ahora.getTime() + 2 * 60 * 1000);
+      console.log('Hora programada:', enDosMinutos.toLocaleString());
+
+      const id = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Prueba Simple',
+          body: 'Esta es una notificación de prueba simple',
+          priority: 'high',
+          channelId: 'default',
+        },
+        trigger: {
+          channelId: 'default',
+          date: enDosMinutos, // Usando date en lugar de seconds
+        },
+      });
+
+      console.log('Notificación programada con ID:', id);
+
+      // Agregamos un pequeño delay antes de verificar las notificaciones programadas
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const notificacionesProgramadas =
+        await Notifications.getAllScheduledNotificationsAsync();
+      console.log(
+        'Notificaciones programadas:',
+        JSON.stringify(notificacionesProgramadas, null, 2)
+      );
+
+      return {
+        success: true,
+        notificationId: id,
+        scheduledFor: enDosMinutos,
+      };
+    } catch (error) {
+      console.error('Error en la prueba:', error);
+      return {
+        success: false,
+        message: error.message || 'Error al programar la notificación',
+      };
+    }
+  }
   //-----------------------------------------------
   static async cancelarTodasLasNotificaciones() {
     try {
