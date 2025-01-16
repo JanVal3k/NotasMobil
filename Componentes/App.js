@@ -4,6 +4,7 @@ import {
   StatusBar,
   useWindowDimensions,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -19,18 +20,6 @@ import Calendario from './Calendario';
 import { ProvedorEstado } from './Clases/hookCambioEstado';
 
 //---------------------------------------
-async function configurarCanal() {
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-}
-//---------------------------------------
-
 const MostrarAllNotes = () => <AllNotes />;
 const MostrarNewNote = () => <NewNote />;
 const renderScene = SceneMap({
@@ -55,6 +44,7 @@ Notifications.setNotificationHandler({
 });
 //--------------------------------------
 const requestNotificationPermissions = async () => {
+  let token;
   if (Device.isDevice) {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
@@ -65,20 +55,31 @@ const requestNotificationPermissions = async () => {
     }
     if (finalStatus !== 'granted') {
       alert('No podremos mostrar notificaciones sin tu permiso');
-      return false;
+      return;
     }
-    return true;
+    token = (await Notifications.getExpoPushTokenAsync()).data;
+    console.log(token);
+  } else {
+    return;
   }
-  alert('Las notificaciones solo funcionan en dispositivos físicos');
-  return false;
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+  return token;
 };
 //--------------------------------------
 const App = () => {
   const layout = useWindowDimensions();
+  const [expoPushToken, setExpoPushToken] = useState('');
   const [index, setIndex] = useState(0);
   //listener--------------
   useEffect(() => {
-    configurarCanal();
+    requestNotificationPermissions().then((token) => setExpoPushToken(token));
     const subscription = Notifications.addNotificationReceivedListener(
       (notification) => {
         console.log('NOTIFICACIÓN RECIBIDA:', notification);

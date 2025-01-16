@@ -15,6 +15,7 @@ import { TextInput, Checkbox } from 'react-native-paper';
 import GuardarYMostrarNotas from './Clases/GuardarYMostrarNotas';
 import { useEstadoGlobal } from './Clases/hookCambioEstado';
 import NotificacionesService from './Clases/crearNotificaciones';
+import * as Notifications from 'expo-notifications';
 import { es } from 'date-fns/locale';
 import { format } from 'date-fns';
 //------------------------------------------
@@ -105,24 +106,19 @@ const Calendario = () => {
         Key: Date.now().toString(),
         Titulo: titulo,
         Fecha: fechaValida,
-        Hora: {
-          Tiempo: {
-            hours: tiempo.getHours(),
-            minutes: tiempo.getMinutes(),
-          },
-        },
+        Hora: tiempo,
       };
 
-      await NotificacionesService.cancelarTodasLasNotificaciones();
+      //await NotificacionesService.cancelarTodasLasNotificaciones();
       await storageService.storeDatepicker(tarea);
 
-      const resultadoNotificaciones =
-        //await NotificacionesService.programarNotificacion(tarea);
-        await NotificacionesService.testNotificacionSimple();
+      await crearNotificacion(tarea);
+      //await NotificacionesService.programarNotificacion(tarea);
+      //await NotificacionesService.testNotificacionSimple();
 
-      if (!resultadoNotificaciones.success) {
-        Alert.alert('Advertencia:', resultadoNotificaciones.message);
-      }
+      //   if (!resultadoNotificaciones.success) {
+      //     Alert.alert('Advertencia:', resultadoNotificaciones.message);
+      //   }
 
       borrarTxtFechyHora();
       setEstadoGlobal(true);
@@ -131,7 +127,37 @@ const Calendario = () => {
       console.error('Error al guardar tarea:', error);
     }
   };
+  //------------------------------------------------------
+  const crearNotificacion = async (tarea) => {
+    const fechaValida = new Date(tarea.Fecha);
+    const horaValida = new Date(tarea.Hora);
 
+    horaValida.setFullYear(fechaValida.getFullYear());
+    horaValida.setMonth(fechaValida.getMonth());
+    horaValida.setDate(fechaValida.getDate());
+
+    const trigger = horaValida;
+
+    // Validar el objeto Date resultante
+    if (isNaN(trigger.getTime())) {
+      throw new Error('Fecha y hora combinadas no válidas');
+    }
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Alert! You have a task to do!',
+          body: tarea.Titulo,
+        },
+        trigger,
+      });
+      console.log('Fecha:', tarea.Fecha);
+      console.log('Hora:', tarea.Hora);
+      console.log('Notificacion creada con exito a las ', trigger);
+    } catch (e) {
+      alert('error al crear la notificacion');
+    }
+  };
+  //------------------------------------------------------
   const toggleCheck = (item) => {
     setTareaSelect((prev) => ({
       ...prev,
