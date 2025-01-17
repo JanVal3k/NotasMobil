@@ -3,111 +3,28 @@ import * as Notifications from 'expo-notifications';
 class NotificacionesService {
   //-----------------------------------------------
   static async programarNotificacion(tarea) {
-    try {
-      const { Titulo, Fecha, Hora } = tarea;
+    const fechaValida = new Date(tarea.Fecha);
+    const horaValida = new Date(tarea.Hora);
 
-      let fechaObjetivo = new Date(Fecha);
+    horaValida.setFullYear(fechaValida.getFullYear());
+    horaValida.setMonth(fechaValida.getMonth());
+    horaValida.setDate(fechaValida.getDate());
 
-      if (Hora && Hora.Tiempo) {
-        fechaObjetivo.setHours(Hora.Tiempo.hours);
-        fechaObjetivo.setMinutes(Hora.Tiempo.minutes);
-        fechaObjetivo.setSeconds(0);
-        fechaObjetivo.setMilliseconds(0);
-      }
+    const trigger = horaValida;
 
-      const ahora = new Date();
-      if (fechaObjetivo <= ahora) {
-        return {
-          success: false,
-          message: 'La fecha y hora seleccionada ya pasó',
-        };
-      }
-
-      console.log('Fecha y hora programada:', fechaObjetivo.toLocaleString());
-
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: '¡Recordatorio de Tarea!',
-          body: `titulo: ${Titulo} y fecha: ${fechaObjetivo}`,
-          sound: true,
-          priority: Notifications.AndroidNotificationPriority.HIGH,
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DATETIME,
-          timestamp: fechaObjetivo.getTime(),
-        },
-      });
-
-      return {
-        success: true,
-        notificationId: id,
-        scheduledFor: fechaObjetivo,
-      };
-    } catch (error) {
-      console.error('Error al programar notificación:', error);
-      return {
-        success: false,
-        message: error.message || 'Error al programar la notificación',
-      };
+    if (isNaN(trigger.getTime())) {
+      throw new Error('Fecha y hora combinadas no válidas');
     }
-  }
-
-  //-----------------------------------------------
-  static async testNotificacionSimple() {
     try {
-      const ahora = new Date();
-      console.log('Hora actual:', ahora.toLocaleString());
-
-      // Calculamos el timestamp para 2 minutos después
-      const enDosMinutos = new Date(ahora.getTime() + 2 * 60 * 1000);
-      console.log('Hora programada:', enDosMinutos.toLocaleString());
-
-      const id = await Notifications.scheduleNotificationAsync({
+      await Notifications.scheduleNotificationAsync({
         content: {
-          title: 'Prueba Simple',
-          body: 'Esta es una notificación de prueba simple',
-          priority: 'high',
-          channelId: 'default',
+          title: 'Alert! Llego la hora de tu tarea!',
+          body: tarea.Titulo,
         },
-        trigger: {
-          channelId: 'default',
-          date: enDosMinutos, // Usando date en lugar de seconds
-        },
+        trigger,
       });
-
-      console.log('Notificación programada con ID:', id);
-
-      // Agregamos un pequeño delay antes de verificar las notificaciones programadas
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const notificacionesProgramadas =
-        await Notifications.getAllScheduledNotificationsAsync();
-      console.log(
-        'Notificaciones programadas:',
-        JSON.stringify(notificacionesProgramadas, null, 2)
-      );
-
-      return {
-        success: true,
-        notificationId: id,
-        scheduledFor: enDosMinutos,
-      };
-    } catch (error) {
-      console.error('Error en la prueba:', error);
-      return {
-        success: false,
-        message: error.message || 'Error al programar la notificación',
-      };
-    }
-  }
-  //-----------------------------------------------
-  static async cancelarTodasLasNotificaciones() {
-    try {
-      await Notifications.cancelAllScheduledNotificationsAsync();
-      return true;
-    } catch (error) {
-      console.error('Error al cancelar todas las notificaciones:', error);
-      return false;
+    } catch (e) {
+      alert('error al crear la notificacion');
     }
   }
 
@@ -126,3 +43,29 @@ class NotificacionesService {
 }
 
 export default NotificacionesService;
+//------------------------------------------------------
+// const crearNotificacion = async (tarea) => {
+//   const fechaValida = new Date(tarea.Fecha);
+//   const horaValida = new Date(tarea.Hora);
+
+//   horaValida.setFullYear(fechaValida.getFullYear());
+//   horaValida.setMonth(fechaValida.getMonth());
+//   horaValida.setDate(fechaValida.getDate());
+
+//   const trigger = horaValida;
+
+//   if (isNaN(trigger.getTime())) {
+//     throw new Error('Fecha y hora combinadas no válidas');
+//   }
+//   try {
+//     await Notifications.scheduleNotificationAsync({
+//       content: {
+//         title: 'Alert! Llego la hora de tu tarea!',
+//         body: tarea.Titulo,
+//       },
+//       trigger,
+//     });
+//   } catch (e) {
+//     alert('error al crear la notificacion');
+//   }
+// };

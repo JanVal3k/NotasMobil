@@ -82,7 +82,7 @@ const App = () => {
     requestNotificationPermissions().then((token) => setExpoPushToken(token));
     const subscription = Notifications.addNotificationReceivedListener(
       (notification) => {
-        console.log('NOTIFICACIÓN RECIBIDA:', notification);
+        console.log('NOTIFICACIÓN RECIBIDA:');
       }
     );
 

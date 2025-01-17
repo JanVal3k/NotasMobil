@@ -27,6 +27,7 @@ const Calendario = () => {
   const [nuevaTarea, setNuevaTarea] = useState(false);
   const [useFecha, setUseFecha] = useState(new Date());
   const [useTiempo, setUseTiempo] = useState(new Date());
+  const [horaActual, setHoraActual] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [tituloTexto, setTituloTexto] = useState('');
@@ -54,12 +55,12 @@ const Calendario = () => {
         try {
           const tareasActualizadas = await GuardarYMostrarNotas.getAllTareas();
           setTareas(tareasActualizadas);
+          setHoraActual(new Date());
           setEstadoGlobal(false);
         } catch (error) {
           console.error('Error actualizando tareas:', error);
         }
       };
-
       actualizarTareas();
     }
   }, [estadoGlobal]);
@@ -69,6 +70,7 @@ const Calendario = () => {
       try {
         const tareasGuardadas = await GuardarYMostrarNotas.getAllTareas();
         setTareas(tareasGuardadas);
+        setHoraActual(new Date());
       } catch (error) {
         console.error('Error cargando tareas:', error);
       }
@@ -111,50 +113,12 @@ const Calendario = () => {
 
       //await NotificacionesService.cancelarTodasLasNotificaciones();
       await storageService.storeDatepicker(tarea);
-
-      await crearNotificacion(tarea);
-      //await NotificacionesService.programarNotificacion(tarea);
-      //await NotificacionesService.testNotificacionSimple();
-
-      //   if (!resultadoNotificaciones.success) {
-      //     Alert.alert('Advertencia:', resultadoNotificaciones.message);
-      //   }
-
+      await NotificacionesService.programarNotificacion(tarea);
       borrarTxtFechyHora();
       setEstadoGlobal(true);
     } catch (error) {
       Alert.alert('Error', 'No se pudo guardar la tarea');
       console.error('Error al guardar tarea:', error);
-    }
-  };
-  //------------------------------------------------------
-  const crearNotificacion = async (tarea) => {
-    const fechaValida = new Date(tarea.Fecha);
-    const horaValida = new Date(tarea.Hora);
-
-    horaValida.setFullYear(fechaValida.getFullYear());
-    horaValida.setMonth(fechaValida.getMonth());
-    horaValida.setDate(fechaValida.getDate());
-
-    const trigger = horaValida;
-
-    // Validar el objeto Date resultante
-    if (isNaN(trigger.getTime())) {
-      throw new Error('Fecha y hora combinadas no válidas');
-    }
-    try {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Alert! You have a task to do!',
-          body: tarea.Titulo,
-        },
-        trigger,
-      });
-      console.log('Fecha:', tarea.Fecha);
-      console.log('Hora:', tarea.Hora);
-      console.log('Notificacion creada con exito a las ', trigger);
-    } catch (e) {
-      alert('error al crear la notificacion');
     }
   };
   //------------------------------------------------------
@@ -226,6 +190,15 @@ const Calendario = () => {
       bgColor: 'white',
     };
     //------------------------------------
+    const fechaModificar = new Date(item.Fecha);
+    const horaModificar = new Date(item.Hora);
+    horaModificar.setFullYear(fechaModificar.getFullYear());
+    horaModificar.setMonth(fechaModificar.getMonth());
+    horaModificar.setDate(fechaModificar.getDate());
+
+    const fechaTarea = horaModificar;
+
+    //------------------------------------
     const formatearFecha = (fecha) => {
       try {
         return format(new Date(fecha), 'dd/MM/yyyy');
@@ -236,9 +209,7 @@ const Calendario = () => {
     };
     //------------------------------------
     const formatearHora = (hora) => {
-      if (!hora?.Tiempo) return 'Sin hora';
-      const { hours, minutes } = hora.Tiempo;
-      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+      return format(hora, 'hh:mm');
     };
 
     return (
@@ -264,6 +235,11 @@ const Calendario = () => {
           <Text style={[styles.txtTitleFlat, { color: colorStyles.txtColor }]}>
             Hora: {formatearHora(item.Hora)} ⏰
           </Text>
+          {fechaTarea <= horaActual && (
+            <Text style={[styles.txtVencido, { color: colorStyles.txtColor }]}>
+              Tarea vencida...
+            </Text>
+          )}
           {btnBorrarVisible[item.dateKey] && (
             <Pressable
               style={styles.btnBorrarTarea}
@@ -527,6 +503,11 @@ const styles = StyleSheet.create({
   txtTitleFlat: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  txtVencido: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    opacity: 0.3,
   },
   txtsFlats: {
     fontSize: 14,
