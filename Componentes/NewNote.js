@@ -16,7 +16,14 @@ import { useEstadoGlobal } from './Clases/hookCambioEstado';
 const NewNote = () => {
   const [tituloTexto, setTituloTexto] = useState('');
   const [notaTexto, setNotaTexto] = useState('');
-  const [fondo, setFondo] = useState('#000');
+  const [estilo, setEstilo] = useState({
+    Bgcolor: '#fff',
+    fontColor: '#000',
+    mode: 'flat',
+    borderColor: '#535F6E',
+    EsquinaBorder: 0,
+    lineaWidghtBorder: 0,
+  });
   const [modalVisible, setModalVisible] = useState(false);
   const { setEstadoGlobal } = useEstadoGlobal();
   const [fecha, setFecha] = useState();
@@ -46,6 +53,8 @@ const NewNote = () => {
     setTituloTexto('');
   };
   //--------------------------------------------
+  const editarEstilo = () => {};
+  //--------------------------------------------
   const mostrarModal = () => {
     setModalVisible(true);
   };
@@ -73,7 +82,18 @@ const NewNote = () => {
             maxLength={44}
             onChangeText={setTituloTexto}
             value={tituloTexto}
-            style={styles.txtTitle}
+            style={[
+              styles.txtTitle,
+              {
+                backgroundColor: estilo.Bgcolor,
+                borderRadius: estilo.EsquinaBorder,
+                color: estilo.fontColor,
+                borderWidth: estilo.lineaWidghtBorder,
+              },
+            ]}
+            mode={estilo.mode}
+            outlineColor={estilo.borderColor}
+            activeOutlineColor={estilo.borderColor}
           />
           <TextInput
             editable
@@ -83,7 +103,18 @@ const NewNote = () => {
             maxLength={1000}
             onChangeText={setNotaTexto}
             value={notaTexto}
-            style={styles.txtNota}
+            style={[
+              styles.txtNota,
+              {
+                backgroundColor: estilo.Bgcolor,
+                borderRadius: estilo.EsquinaBorder,
+                color: estilo.fontColor,
+                borderWidth: estilo.lineaWidghtBorder,
+              },
+            ]}
+            mode={estilo.mode}
+            outlineColor={estilo.borderColor}
+            activeOutlineColor={estilo.borderColor}
           />
           <View style={styles.viewBtns}>
             <Pressable onPress={() => mostrarModal()} style={styles.btnContent}>
@@ -113,7 +144,10 @@ const NewNote = () => {
               <Pressable
                 style={styles.btnModal}
                 onPress={() => {
-                  console.log('De momento dejo esto aqui');
+                  setEstilo((prevEstilo) => ({
+                    ...prevEstilo,
+                    EsquinaBorder: 10,
+                  }));
                 }}
               >
                 <Text style={styles.txtBtnModal}>
@@ -126,7 +160,10 @@ const NewNote = () => {
               <Pressable
                 style={styles.btnModal}
                 onPress={() => {
-                  console.log('De momento dejo esto aqui');
+                  setEstilo((prevEstilo) => ({
+                    ...prevEstilo,
+                    EsquinaBorder: 0,
+                  }));
                 }}
               >
                 <Text style={styles.txtBtnModal}>
@@ -139,7 +176,11 @@ const NewNote = () => {
               <Pressable
                 style={styles.btnModal}
                 onPress={() => {
-                  console.log('De momento dejo esto aqui');
+                  setEstilo((prevEstilo) => ({
+                    ...prevEstilo,
+                    mode: 'outlined',
+                    lineaWidghtBorder: 2,
+                  }));
                 }}
               >
                 <Text style={styles.txtBtnModal}>
@@ -152,7 +193,11 @@ const NewNote = () => {
               <Pressable
                 style={styles.btnModal}
                 onPress={() => {
-                  console.log('De momento dejo esto aqui');
+                  setEstilo((prevEstilo) => ({
+                    ...prevEstilo,
+                    mode: 'outlined',
+                    lineaWidghtBorder: 4,
+                  }));
                 }}
               >
                 <Text style={styles.txtBtnModal}>
@@ -167,7 +212,11 @@ const NewNote = () => {
               <Pressable
                 style={[styles.btnModal, { backgroundColor: '#7A8D9B' }]}
                 onPress={() => {
-                  console.log('De momento dejo esto aqui');
+                  setEstilo((prevEstilo) => ({
+                    ...prevEstilo,
+                    borderColor: '#EBBA73',
+                    Bgcolor: '#7A8D9B',
+                  }));
                 }}
               >
                 <Text></Text>
@@ -175,7 +224,11 @@ const NewNote = () => {
               <Pressable
                 style={[styles.btnModal, { backgroundColor: '#B2B9BF' }]}
                 onPress={() => {
-                  console.log('De momento dejo esto aqui');
+                  setEstilo((prevEstilo) => ({
+                    ...prevEstilo,
+                    borderColor: '#6B6357',
+                    Bgcolor: '#B2B9BF',
+                  }));
                 }}
               >
                 <Text></Text>
@@ -183,7 +236,11 @@ const NewNote = () => {
               <Pressable
                 style={[styles.btnModal, { backgroundColor: '#EED0C6' }]}
                 onPress={() => {
-                  console.log('De momento dejo esto aqui');
+                  setEstilo((prevEstilo) => ({
+                    ...prevEstilo,
+                    borderColor: '#7EABA1',
+                    Bgcolor: '#EED0C6',
+                  }));
                 }}
               >
                 <Text></Text>
@@ -191,7 +248,11 @@ const NewNote = () => {
               <Pressable
                 style={[styles.btnModal, { backgroundColor: '#DABEB6' }]}
                 onPress={() => {
-                  console.log('De momento dejo esto aqui');
+                  setEstilo((prevEstilo) => ({
+                    ...prevEstilo,
+                    borderColor: '#96817B',
+                    Bgcolor: '#DABEB6',
+                  }));
                 }}
               >
                 <Text></Text>
@@ -230,17 +291,11 @@ const styles = StyleSheet.create({
   },
   txtTitle: {
     flex: 1,
-    borderRadius: 10,
-    backgroundColor: 'white',
-    color: 'white',
     maxHeight: 60,
     marginBottom: 8,
   },
   txtNota: {
     flex: 1,
-    borderRadius: 10,
-    backgroundColor: 'white',
-    color: 'white',
     maxHeight: 580,
     overflow: 'hidden',
   },
