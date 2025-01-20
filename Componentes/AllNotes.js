@@ -106,9 +106,21 @@ const AllNotes = () => {
           <View key={index} style={styles.viewMap}>
             <TouchableOpacity
               onPress={() => toggleCollapsible(index)}
-              style={styles.touchableContent}
+              style={[
+                styles.touchableContent,
+                {
+                  backgroundColor: nota.Estilos.Bgcolor,
+                  borderRadius: nota.Estilos.EsquinaBorder,
+                },
+              ]}
             >
-              <Text style={styles.txtTouchable}>
+              <Text
+                style={{
+                  color: nota.Estilos.fontColor,
+                  fontWeight: nota.Estilos.WeightFont,
+                  fontSize: nota.Estilos.SizeFont,
+                }}
+              >
                 {isCollapsed === index
                   ? `${nota.Titulo} ⌃`
                   : `${nota.Titulo} ⌄`}
@@ -118,10 +130,24 @@ const AllNotes = () => {
             <ScrollView style={{ overflow: 'hidden' }}>
               <Collapsible
                 collapsed={isCollapsed !== index}
-                style={styles.collapsibleContent}
+                style={[
+                  styles.collapsibleContent,
+                  {
+                    backgroundColor: nota.Estilos.Bgcolor,
+                    borderRadius: nota.Estilos.EsquinaBorder,
+                  },
+                ]}
               >
                 <View style={{ justifyContent: 'center', margin: 2 }}>
-                  <Text style={{ color: 'black' }}>{nota.Contenido}</Text>
+                  <Text
+                    style={{
+                      color: nota.Estilos.fontColor,
+                      fontWeight: nota.Estilos.WeightFont,
+                      fontSize: nota.Estilos.SizeFont,
+                    }}
+                  >
+                    {nota.Contenido}
+                  </Text>
                 </View>
                 <View style={styles.viewFcBtns}>
                   <View style={styles.viewFecha}>
@@ -229,18 +255,11 @@ const styles = StyleSheet.create({
   },
   touchableContent: {
     padding: 5,
-    backgroundColor: 'white',
-  },
-  txtTouchable: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    color: 'black',
   },
   collapsibleContent: {
     borderTopWidth: 1,
     borderTopColor: '#192b42',
     padding: 7,
-    backgroundColor: 'white',
   },
   viewFcBtns: {
     width: '100%',

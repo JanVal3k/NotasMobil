@@ -39,7 +39,9 @@ const NewNote = () => {
         Titulo: titulo,
         Contenido: Nota,
         Fecha: new Date(),
+        Estilos: estilo,
       });
+      formatearStyles();
       setEstadoGlobal(true);
       return btnGuardar;
     }
@@ -58,11 +60,9 @@ const NewNote = () => {
       fontColor: '#000',
       EsquinaBorder: 0,
       WeightFont: 'normal ',
-      fontSize: 16,
+      SizeFont: 16,
     });
   };
-  //--------------------------------------------
-  const editarEstilo = () => {};
   //--------------------------------------------
   const mostrarModal = () => {
     setModalVisible(true);
@@ -255,6 +255,14 @@ const NewNote = () => {
               >
                 <Text></Text>
               </Pressable>
+              <Pressable
+                style={styles.btnModalGuaradar}
+                onPress={() => {
+                  formatearStyles();
+                }}
+              >
+                <Text style={styles.txtBtnModalGuardad}>Rest...</Text>
+              </Pressable>
             </View>
           </View>
         </Modal>
@@ -310,6 +318,7 @@ const styles = StyleSheet.create({
   contentModal: {
     width: '90%',
     height: '35%',
+    marginTop: 325,
     margin: 20,
     borderRadius: 16,
     backgroundColor: 'white',
@@ -348,8 +357,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   btnModalGuaradar: {
-    top: 240,
-    left: 220,
+    top: 100,
+    left: 190,
     zIndex: 1,
     position: 'absolute',
     width: 90,
