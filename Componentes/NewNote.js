@@ -19,10 +19,10 @@ const NewNote = () => {
   const [estilo, setEstilo] = useState({
     Bgcolor: '#fff',
     fontColor: '#000',
-    mode: 'flat',
-    borderColor: '#535F6E',
     EsquinaBorder: 0,
-    lineaWidghtBorder: 0,
+    StyleFont: 'normal',
+    WeightFont: 'normal ',
+    SizeFont: 16,
   });
   const [modalVisible, setModalVisible] = useState(false);
   const { setEstadoGlobal } = useEstadoGlobal();
@@ -51,6 +51,15 @@ const NewNote = () => {
   const limpiartTxts = () => {
     setNotaTexto('');
     setTituloTexto('');
+  };
+  const formatearStyles = () => {
+    setEstilo({
+      Bgcolor: '#fff',
+      fontColor: '#000',
+      EsquinaBorder: 0,
+      WeightFont: 'normal ',
+      fontSize: 16,
+    });
   };
   //--------------------------------------------
   const editarEstilo = () => {};
@@ -88,12 +97,10 @@ const NewNote = () => {
                 backgroundColor: estilo.Bgcolor,
                 borderRadius: estilo.EsquinaBorder,
                 color: estilo.fontColor,
-                borderWidth: estilo.lineaWidghtBorder,
+                fontSize: estilo.SizeFont,
+                fontWeight: estilo.WeightFont,
               },
             ]}
-            mode={estilo.mode}
-            outlineColor={estilo.borderColor}
-            activeOutlineColor={estilo.borderColor}
           />
           <TextInput
             editable
@@ -109,12 +116,10 @@ const NewNote = () => {
                 backgroundColor: estilo.Bgcolor,
                 borderRadius: estilo.EsquinaBorder,
                 color: estilo.fontColor,
-                borderWidth: estilo.lineaWidghtBorder,
+                fontSize: estilo.SizeFont,
+                fontWeight: estilo.WeightFont,
               },
             ]}
-            mode={estilo.mode}
-            outlineColor={estilo.borderColor}
-            activeOutlineColor={estilo.borderColor}
           />
           <View style={styles.viewBtns}>
             <Pressable onPress={() => mostrarModal()} style={styles.btnContent}>
@@ -146,7 +151,7 @@ const NewNote = () => {
                 onPress={() => {
                   setEstilo((prevEstilo) => ({
                     ...prevEstilo,
-                    EsquinaBorder: 10,
+                    EsquinaBorder: prevEstilo.EsquinaBorder === 0 ? 14 : 0,
                   }));
                 }}
               >
@@ -162,15 +167,18 @@ const NewNote = () => {
                 onPress={() => {
                   setEstilo((prevEstilo) => ({
                     ...prevEstilo,
-                    EsquinaBorder: 0,
+                    WeightFont:
+                      prevEstilo.WeightFont === 'normal' ? 'bold' : 'normal',
                   }));
                 }}
               >
-                <Text style={styles.txtBtnModal}>
-                  <Image
-                    style={styles.imgBtnModa}
-                    source={require('../assets/EsquinasRectas.png')}
-                  />
+                <Text
+                  style={[
+                    styles.txtBtnModal,
+                    { fontWeight: 'bold', fontSize: 30 },
+                  ]}
+                >
+                  A
                 </Text>
               </Pressable>
               <Pressable
@@ -178,34 +186,24 @@ const NewNote = () => {
                 onPress={() => {
                   setEstilo((prevEstilo) => ({
                     ...prevEstilo,
-                    mode: 'outlined',
-                    lineaWidghtBorder: 2,
+                    SizeFont:
+                      prevEstilo.SizeFont <= 24 ? prevEstilo.SizeFont + 1 : 24,
                   }));
                 }}
               >
-                <Text style={styles.txtBtnModal}>
-                  <Image
-                    style={styles.imgBtnModa}
-                    source={require('../assets/LineaDelgada.png')}
-                  />
-                </Text>
+                <Text style={[styles.txtBtnModal, { fontSize: 30 }]}>A+</Text>
               </Pressable>
               <Pressable
                 style={styles.btnModal}
                 onPress={() => {
                   setEstilo((prevEstilo) => ({
                     ...prevEstilo,
-                    mode: 'outlined',
-                    lineaWidghtBorder: 4,
+                    SizeFont:
+                      prevEstilo.SizeFont >= 16 ? prevEstilo.SizeFont - 1 : 16,
                   }));
                 }}
               >
-                <Text style={styles.txtBtnModal}>
-                  <Image
-                    style={styles.imgBtnModa}
-                    source={require('../assets/LineaGruesa.png')}
-                  />
-                </Text>
+                <Text style={[styles.txtBtnModal, { fontSize: 30 }]}>A-</Text>
               </Pressable>
             </View>
             <View style={styles.ViewButtomModal}>
@@ -214,44 +212,44 @@ const NewNote = () => {
                 onPress={() => {
                   setEstilo((prevEstilo) => ({
                     ...prevEstilo,
-                    borderColor: '#EBBA73',
-                    Bgcolor: '#7A8D9B',
+                    Bgcolor:
+                      prevEstilo.Bgcolor === '#7A8D9B' ? '#fff' : '#7A8D9B',
                   }));
                 }}
               >
                 <Text></Text>
               </Pressable>
               <Pressable
-                style={[styles.btnModal, { backgroundColor: '#B2B9BF' }]}
+                style={[styles.btnModal, { backgroundColor: '#fcb7af' }]}
                 onPress={() => {
                   setEstilo((prevEstilo) => ({
                     ...prevEstilo,
-                    borderColor: '#6B6357',
-                    Bgcolor: '#B2B9BF',
+                    Bgcolor:
+                      prevEstilo.Bgcolor === '#fcb7af' ? '#fff' : '#fcb7af',
                   }));
                 }}
               >
                 <Text></Text>
               </Pressable>
               <Pressable
-                style={[styles.btnModal, { backgroundColor: '#EED0C6' }]}
+                style={[styles.btnModal, { backgroundColor: '#b0f2c2' }]}
                 onPress={() => {
                   setEstilo((prevEstilo) => ({
                     ...prevEstilo,
-                    borderColor: '#7EABA1',
-                    Bgcolor: '#EED0C6',
+                    Bgcolor:
+                      prevEstilo.Bgcolor === '#b0f2c2' ? '#fff' : '#b0f2c2',
                   }));
                 }}
               >
                 <Text></Text>
               </Pressable>
               <Pressable
-                style={[styles.btnModal, { backgroundColor: '#DABEB6' }]}
+                style={[styles.btnModal, { backgroundColor: '#ffda9e' }]}
                 onPress={() => {
                   setEstilo((prevEstilo) => ({
                     ...prevEstilo,
-                    borderColor: '#96817B',
-                    Bgcolor: '#DABEB6',
+                    Bgcolor:
+                      prevEstilo.Bgcolor === '#ffda9e' ? '#fff' : '#ffda9e',
                   }));
                 }}
               >
@@ -259,14 +257,6 @@ const NewNote = () => {
               </Pressable>
             </View>
           </View>
-          <Pressable
-            style={styles.btnModalGuaradar}
-            onPress={() => {
-              console.log('De momento dejo esto aqui');
-            }}
-          >
-            <Text style={styles.txtBtnModalGuardad}>guardar</Text>
-          </Pressable>
         </Modal>
       </Portal>
     </View>
