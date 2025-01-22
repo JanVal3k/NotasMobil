@@ -8,6 +8,7 @@ import {
   Platform,
   Pressable,
   Alert,
+  Image,
 } from 'react-native';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -19,15 +20,15 @@ import { Modal, Portal, TextInput } from 'react-native-paper';
 
 const AllNotes = () => {
   const [notas, setNotas] = useState([]);
-  const [tituloTexto, setTituloTexto] = useState('');
-  const [notaTexto, setNotaTexto] = useState('');
   const [isCollapsed, setIsCollapsed] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalStyleVisible, setModalStyleVisible] = useState(false);
   const [notaSeleccionada, setNotaSeleccionada] = useState(null);
   const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
   //------------------------------------------
   const tituloRef = useRef('');
   const notaRef = useRef('');
+  const [stylosNotaRef, setStylosNotaRef] = useState({});
   //------------------------------------------
   useEffect(() => {
     GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
@@ -48,10 +49,26 @@ const AllNotes = () => {
     setNotaSeleccionada(nota);
     tituloRef.current = nota.Titulo;
     notaRef.current = nota.Contenido;
+    setStylosNotaRef(nota.Estilos);
     setModalVisible(true);
+  };
+  const formatearStyles = () => {
+    setStylosNotaRef({
+      Bgcolor: '#fff',
+      fontColor: '#000',
+      EsquinaBorder: 0,
+      WeightFont: 'normal ',
+      SizeFont: 16,
+    });
   };
   const ocultarModal = () => {
     setModalVisible(false);
+  };
+  const mostrarModalStyle = () => {
+    setModalStyleVisible(true);
+  };
+  const ocultarModalStyle = () => {
+    setModalStyleVisible(false);
   };
   //------------------------------------------
   const borrarNota = (keyNota) => {
@@ -70,6 +87,7 @@ const AllNotes = () => {
         Titulo: tituloRef.current,
         Contenido: notaRef.current,
         Fecha: new Date(),
+        Estilos: stylosNotaRef,
       });
       setEstadoGlobal(true);
       return btnEditarNota;
@@ -166,12 +184,6 @@ const AllNotes = () => {
                     </Pressable>
                     <Pressable
                       style={styles.btnPressable}
-                      onPress={() => console.log('Botón configuracion')}
-                    >
-                      <Text style={styles.txtBotones}>⚙️</Text>
-                    </Pressable>
-                    <Pressable
-                      style={styles.btnPressable}
                       onPress={() => alertaSiyNo(nota.key)}
                     >
                       <Text style={styles.txtBotones}>🗑️</Text>
@@ -203,7 +215,16 @@ const AllNotes = () => {
                   onChangeText={(texto) => {
                     tituloRef.current = texto;
                   }}
-                  style={styles.txtTituloModal}
+                  style={[
+                    styles.txtTituloModal,
+                    {
+                      backgroundColor: stylosNotaRef.Bgcolor,
+                      borderRadius: stylosNotaRef.EsquinaBorder,
+                      fontWeight: stylosNotaRef.WeightFont,
+                      fontSize: stylosNotaRef.SizeFont,
+                      color: stylosNotaRef.fontColor,
+                    },
+                  ]}
                 ></TextInput>
                 <TextInput
                   editable
@@ -213,20 +234,158 @@ const AllNotes = () => {
                   onChangeText={(texto) => {
                     notaRef.current = texto;
                   }}
-                  style={styles.txtNotaModal}
+                  style={[
+                    styles.txtNotaModal,
+                    {
+                      backgroundColor: stylosNotaRef.Bgcolor,
+                      borderRadius: stylosNotaRef.EsquinaBorder,
+                      fontWeight: stylosNotaRef.WeightFont,
+                      fontSize: stylosNotaRef.SizeFont,
+                      color: stylosNotaRef.fontColor,
+                    },
+                  ]}
                 ></TextInput>
-                <Pressable
-                  style={styles.btnModal}
-                  onPress={() => {
-                    editarNota(GuardarYMostrarNotas, notaSeleccionada.key);
-                    ocultarModal();
-                  }}
-                >
-                  <Text style={styles.txtBtnModal}>Guardar</Text>
-                </Pressable>
+                <View style={styles.viewBtnModal1}>
+                  <Pressable
+                    onPress={() => mostrarModalStyle()}
+                    style={styles.btnStyleContent}
+                  >
+                    <Text style={styles.txtBotonStyles}>✏️</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.btnModal}
+                    onPress={() => {
+                      editarNota(GuardarYMostrarNotas, notaSeleccionada.key);
+                      ocultarModal();
+                    }}
+                  >
+                    <Text style={styles.txtBtnModal}>Guardar</Text>
+                  </Pressable>
+                </View>
               </View>
             </KeyboardAvoidingView>
           )}
+        </Modal>
+        {/*------------------------------------------ */}
+        <Modal
+          visible={modalStyleVisible}
+          onDismiss={ocultarModalStyle}
+          contentContainerStyle={styles.contentModalStyle}
+        >
+          <View style={styles.viewModalStyle}>
+            <View style={styles.ViewTopModalStyle}>
+              <Pressable
+                style={styles.btnModalStyle}
+                onPress={() => {
+                  setStylosNotaRef((prevEstilo) => ({
+                    ...prevEstilo,
+                    EsquinaBorder: prevEstilo.EsquinaBorder === 0 ? 14 : 0,
+                  }));
+                }}
+              >
+                <Text>
+                  <Image
+                    style={styles.imgBtnModa}
+                    source={require('../assets/EsquinasRedondas.png')}
+                  />
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.btnModalStyle}
+                onPress={() => {
+                  setStylosNotaRef((prevEstilo) => ({
+                    ...prevEstilo,
+                    WeightFont:
+                      prevEstilo.WeightFont === 'normal' ? 'bold' : 'normal',
+                  }));
+                }}
+              >
+                <Text style={{ fontWeight: 'bold', fontSize: 30 }}>A</Text>
+              </Pressable>
+              <Pressable
+                style={styles.btnModalStyle}
+                onPress={() => {
+                  setStylosNotaRef((prevEstilo) => ({
+                    ...prevEstilo,
+                    SizeFont:
+                      prevEstilo.SizeFont <= 24 ? prevEstilo.SizeFont + 1 : 24,
+                  }));
+                }}
+              >
+                <Text style={{ fontSize: 30 }}>A+</Text>
+              </Pressable>
+              <Pressable
+                style={styles.btnModalStyle}
+                onPress={() => {
+                  setStylosNotaRef((prevEstilo) => ({
+                    ...prevEstilo,
+                    SizeFont:
+                      prevEstilo.SizeFont >= 16 ? prevEstilo.SizeFont - 1 : 16,
+                  }));
+                }}
+              >
+                <Text style={{ fontSize: 30 }}>A-</Text>
+              </Pressable>
+            </View>
+            <View style={styles.ViewButtomModal}>
+              <Pressable
+                style={[styles.btnModalStyle, { backgroundColor: '#7A8D9B' }]}
+                onPress={() => {
+                  setStylosNotaRef((prevEstilo) => ({
+                    ...prevEstilo,
+                    Bgcolor:
+                      prevEstilo.Bgcolor === '#7A8D9B' ? '#fff' : '#7A8D9B',
+                  }));
+                }}
+              >
+                <Text></Text>
+              </Pressable>
+              <Pressable
+                style={[styles.btnModalStyle, { backgroundColor: '#fcb7af' }]}
+                onPress={() => {
+                  setStylosNotaRef((prevEstilo) => ({
+                    ...prevEstilo,
+                    Bgcolor:
+                      prevEstilo.Bgcolor === '#fcb7af' ? '#fff' : '#fcb7af',
+                  }));
+                }}
+              >
+                <Text></Text>
+              </Pressable>
+              <Pressable
+                style={[styles.btnModalStyle, { backgroundColor: '#b0f2c2' }]}
+                onPress={() => {
+                  setStylosNotaRef((prevEstilo) => ({
+                    ...prevEstilo,
+                    Bgcolor:
+                      prevEstilo.Bgcolor === '#b0f2c2' ? '#fff' : '#b0f2c2',
+                  }));
+                }}
+              >
+                <Text></Text>
+              </Pressable>
+              <Pressable
+                style={[styles.btnModalStyle, { backgroundColor: '#ffda9e' }]}
+                onPress={() => {
+                  setStylosNotaRef((prevEstilo) => ({
+                    ...prevEstilo,
+                    Bgcolor:
+                      prevEstilo.Bgcolor === '#ffda9e' ? '#fff' : '#ffda9e',
+                  }));
+                }}
+              >
+                <Text></Text>
+              </Pressable>
+              <Pressable
+                style={styles.btnModalGuaradar}
+                onPress={() => {
+                  formatearStyles();
+                }}
+              >
+                <Text style={styles.txtBtnModalGuardad}>Rest...</Text>
+              </Pressable>
+            </View>
+          </View>
         </Modal>
       </Portal>
     </View>
@@ -299,19 +458,15 @@ const styles = StyleSheet.create({
   },
   viewModal: {
     flex: 1,
+    overflow: 'hidden',
     justifyContent: 'center',
     paddingLeft: 10,
   },
   txtTituloModal: {
-    width: '94%',
+    width: '95%',
     height: 50,
     margin: 5,
     padding: 5,
-    borderRadius: 10,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    backgroundColor: 'white',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -327,11 +482,6 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
     margin: 5,
     padding: 5,
-    borderRadius: 10,
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'black',
-    backgroundColor: 'white',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -341,12 +491,15 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
+  viewBtnModal1: {
+    flexDirection: 'row',
+  },
   btnModal: {
-    left: '71.5%',
+    left: '45%',
     width: 80,
     backgroundColor: '#ff7676',
     borderRadius: 20,
-    margin: 5,
+    marginTop: 5,
     padding: 5,
     justifyContent: 'center',
     alignItems: 'center',
@@ -355,6 +508,67 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: 'white',
+  },
+  btnStyleContent: {
+    left: '40.5%',
+    width: 80,
+    backgroundColor: '#ff7676',
+    borderRadius: 20,
+    marginTop: 5,
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  txtBotonStyles: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  contentModalStyle: {
+    zIndex: 10,
+    width: '90%',
+    height: '35%',
+    marginTop: 325,
+    margin: 20,
+    borderRadius: 16,
+    backgroundColor: 'white',
+    padding: 10,
+  },
+  viewModalStyle: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  ViewTopModalStyle: {
+    flexDirection: 'row',
+  },
+  btnModalStyle: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    margin: 5,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  txtBtnModalGuardad: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  ViewButtomModal: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 });
 

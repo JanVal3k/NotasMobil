@@ -20,7 +20,6 @@ const NewNote = () => {
     Bgcolor: '#fff',
     fontColor: '#000',
     EsquinaBorder: 0,
-    StyleFont: 'normal',
     WeightFont: 'normal ',
     SizeFont: 16,
   });
@@ -155,7 +154,7 @@ const NewNote = () => {
                   }));
                 }}
               >
-                <Text style={styles.txtBtnModal}>
+                <Text>
                   <Image
                     style={styles.imgBtnModa}
                     source={require('../assets/EsquinasRedondas.png')}
@@ -172,14 +171,7 @@ const NewNote = () => {
                   }));
                 }}
               >
-                <Text
-                  style={[
-                    styles.txtBtnModal,
-                    { fontWeight: 'bold', fontSize: 30 },
-                  ]}
-                >
-                  A
-                </Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 30 }}>A</Text>
               </Pressable>
               <Pressable
                 style={styles.btnModal}
@@ -191,7 +183,7 @@ const NewNote = () => {
                   }));
                 }}
               >
-                <Text style={[styles.txtBtnModal, { fontSize: 30 }]}>A+</Text>
+                <Text style={{ fontSize: 30 }}>A+</Text>
               </Pressable>
               <Pressable
                 style={styles.btnModal}
@@ -203,7 +195,7 @@ const NewNote = () => {
                   }));
                 }}
               >
-                <Text style={[styles.txtBtnModal, { fontSize: 30 }]}>A-</Text>
+                <Text style={{ fontSize: 30 }}>A-</Text>
               </Pressable>
             </View>
             <View style={styles.ViewButtomModal}>
