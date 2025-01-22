@@ -382,7 +382,7 @@ const AllNotes = () => {
                   formatearStyles();
                 }}
               >
-                <Text style={styles.txtBtnModalGuardad}>Rest...</Text>
+                <Text style={styles.txtBtnModalGuardad}>Reset...</Text>
               </Pressable>
             </View>
           </View>
@@ -542,6 +542,9 @@ const styles = StyleSheet.create({
   ViewTopModalStyle: {
     flexDirection: 'row',
   },
+  ViewButtomModal: {
+    flexDirection: 'row',
+  },
   btnModalStyle: {
     width: 60,
     height: 60,
@@ -565,10 +568,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  ViewButtomModal: {
+  btnModalGuaradar: {
+    top: 85,
+    left: 190,
+    zIndex: 1,
+    position: 'absolute',
+    width: 90,
+    height: 35,
+    backgroundColor: 'blue',
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'row',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });
 
