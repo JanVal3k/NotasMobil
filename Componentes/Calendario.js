@@ -9,6 +9,7 @@ import {
   FlatList,
   StatusBar,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TextInput, Checkbox } from 'react-native-paper';
@@ -17,7 +18,7 @@ import { useEstadoGlobal } from './Clases/hookCambioEstado';
 import NotificacionesService from './Clases/crearNotificaciones';
 import * as Notifications from 'expo-notifications';
 import { es } from 'date-fns/locale';
-import { format } from 'date-fns';
+import { format, set } from 'date-fns';
 //------------------------------------------
 //------------------------------------------
 
@@ -34,6 +35,7 @@ const Calendario = () => {
   const [tareaSelect, setTareaSelect] = useState({});
   const [colors, setColors] = useState({});
   const [btnBorrarVisible, setBtnBorrarVisible] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const abrirCalendario = () => {
     setShowDatePicker(true);
@@ -50,6 +52,7 @@ const Calendario = () => {
   };
   //---------------------------------
   useEffect(() => {
+    setLoading(true);
     if (estadoGlobal) {
       const actualizarTareas = async () => {
         try {
@@ -61,11 +64,18 @@ const Calendario = () => {
           console.error('Error actualizando tareas:', error);
         }
       };
-      actualizarTareas();
+      actualizarTareas().finally(() => {
+        const timer = setTimeout(() => {
+          setLoading(false);
+        }, 300);
+
+        return () => clearTimeout(timer);
+      });
     }
   }, [estadoGlobal]);
   //---------------------------------
   useEffect(() => {
+    setLoading(true);
     const cargarTareas = async () => {
       try {
         const tareasGuardadas = await GuardarYMostrarNotas.getAllTareas();
@@ -76,7 +86,13 @@ const Calendario = () => {
       }
     };
 
-    cargarTareas();
+    cargarTareas().finally(() => {
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 300);
+
+      return () => clearTimeout(timer);
+    });
   }, []);
   //---------------------------------
   const onChangeTiempo = (event, selectedTime) => {
@@ -102,7 +118,7 @@ const Calendario = () => {
         Alert.alert('Error', 'La fecha seleccionada no es válida');
         return;
       }
-
+      setLoading(true);
       const tarea = {
         dateKey: Date.now().toString(),
         Key: Date.now().toString(),
@@ -110,8 +126,6 @@ const Calendario = () => {
         Fecha: fechaValida,
         Hora: tiempo,
       };
-
-      //await NotificacionesService.cancelarTodasLasNotificaciones();
       await storageService.storeDatepicker(tarea);
       await NotificacionesService.programarNotificacion(tarea);
       borrarTxtFechyHora();
@@ -150,6 +164,7 @@ const Calendario = () => {
   };
 
   const borrarTarea = (keyNota) => {
+    setLoading(true);
     if (GuardarYMostrarNotas.deleteTarea(keyNota)) {
       setEstadoGlobal(true);
     }
@@ -256,20 +271,33 @@ const Calendario = () => {
   return (
     <View style={styles.viewContainer}>
       <StatusBar style="light" />
+      {loading ? (
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#192b42',
+          }}
+        >
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      ) : (
+        <>
+          <FlatList
+            data={tareas}
+            keyExtractor={(item, index) => item.Key || index.toString()}
+            renderItem={renderItem}
+          />
 
-      <FlatList
-        data={tareas}
-        keyExtractor={(item, index) => item.Key || index.toString()}
-        renderItem={renderItem}
-      />
-
-      <TouchableOpacity
-        style={styles.extraButton}
-        onPress={() => setNuevaTarea(true)}
-      >
-        <Text style={styles.extraButtonText}>+</Text>
-      </TouchableOpacity>
-
+          <TouchableOpacity
+            style={styles.extraButton}
+            onPress={() => setNuevaTarea(true)}
+          >
+            <Text style={styles.extraButtonText}>+</Text>s
+          </TouchableOpacity>
+        </>
+      )}
       <Modal
         animationType="slide"
         transparent={true}

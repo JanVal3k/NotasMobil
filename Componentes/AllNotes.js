@@ -140,7 +140,6 @@ const AllNotes = () => {
   };
   return (
     <View style={styles.viewContent}>
-      <Text style={styles.txtContent}>NOTAS</Text>
       {loading ? (
         <View
           style={{
@@ -502,6 +501,7 @@ const styles = StyleSheet.create({
     height: 50,
     margin: 5,
     padding: 5,
+    color: 'black',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -517,6 +517,7 @@ const styles = StyleSheet.create({
     maxHeight: '80%',
     margin: 5,
     padding: 5,
+    color: 'black',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
