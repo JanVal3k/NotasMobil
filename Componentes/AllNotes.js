@@ -9,6 +9,7 @@ import {
   Pressable,
   Alert,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -25,23 +26,42 @@ const AllNotes = () => {
   const [modalStyleVisible, setModalStyleVisible] = useState(false);
   const [notaSeleccionada, setNotaSeleccionada] = useState(null);
   const { estadoGlobal, setEstadoGlobal } = useEstadoGlobal();
+  const [loading, setLoading] = useState(true);
   //------------------------------------------
   const tituloRef = useRef('');
   const notaRef = useRef('');
   const [stylosNotaRef, setStylosNotaRef] = useState({});
   //------------------------------------------
   useEffect(() => {
-    GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
-      setNotas(notasTraidas);
-    });
+    setLoading(true);
+    GuardarYMostrarNotas.getAllNotes()
+      .then((notasTraidas) => {
+        setNotas(notasTraidas);
+      })
+      .finally(() => {
+        const timer = setTimeout(() => {
+          setLoading(false);
+        }, 300);
+
+        return () => clearTimeout(timer);
+      });
   }, []);
   //------------------------------------------
   useEffect(() => {
     if (estadoGlobal) {
-      GuardarYMostrarNotas.getAllNotes().then((notasTraidas) => {
-        setNotas(notasTraidas);
-        setEstadoGlobal(false);
-      });
+      setLoading(true);
+      GuardarYMostrarNotas.getAllNotes()
+        .then((notasTraidas) => {
+          setNotas(notasTraidas);
+          setEstadoGlobal(false);
+        })
+        .finally(() => {
+          const timer = setTimeout(() => {
+            setLoading(false);
+          }, 300);
+
+          return () => clearTimeout(timer);
+        });
     }
   }, [estadoGlobal]);
   //------------------------------------------
@@ -72,6 +92,7 @@ const AllNotes = () => {
   };
   //------------------------------------------
   const borrarNota = (keyNota) => {
+    setLoading(true);
     if (GuardarYMostrarNotas.deleteNote(keyNota)) {
       setEstadoGlobal(true);
     }
@@ -83,6 +104,7 @@ const AllNotes = () => {
     } else if (!notaRef.current.trim()) {
       Alert.alert('El contenido de la nota no puede estar vacio');
     } else {
+      setLoading(true);
       btnEditarNota.editNota(key, {
         Titulo: tituloRef.current,
         Contenido: notaRef.current,
@@ -119,82 +141,95 @@ const AllNotes = () => {
   return (
     <View style={styles.viewContent}>
       <Text style={styles.txtContent}>NOTAS</Text>
-      <ScrollView style={styles.scrollContent}>
-        {notas.map((nota, index) => (
-          <View key={index} style={styles.viewMap}>
-            <TouchableOpacity
-              onPress={() => toggleCollapsible(index)}
-              style={[
-                styles.touchableContent,
-                {
-                  backgroundColor: nota.Estilos.Bgcolor,
-                  borderRadius: nota.Estilos.EsquinaBorder,
-                },
-              ]}
-            >
-              <Text
-                style={{
-                  color: nota.Estilos.fontColor,
-                  fontWeight: nota.Estilos.WeightFont,
-                  fontSize: nota.Estilos.SizeFont,
-                }}
-              >
-                {isCollapsed === index
-                  ? `${nota.Titulo} ⌃`
-                  : `${nota.Titulo} ⌄`}
-              </Text>
-            </TouchableOpacity>
-
-            <ScrollView style={{ overflow: 'hidden' }}>
-              <Collapsible
-                collapsed={isCollapsed !== index}
+      {loading ? (
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#192b42',
+          }}
+        >
+          <ActivityIndicator size="large" color="#fff" />
+        </View>
+      ) : (
+        <ScrollView style={styles.scrollContent}>
+          {notas.map((nota, index) => (
+            <View key={index} style={styles.viewMap}>
+              <TouchableOpacity
+                onPress={() => toggleCollapsible(index)}
                 style={[
-                  styles.collapsibleContent,
+                  styles.touchableContent,
                   {
                     backgroundColor: nota.Estilos.Bgcolor,
                     borderRadius: nota.Estilos.EsquinaBorder,
                   },
                 ]}
               >
-                <View style={{ justifyContent: 'center', margin: 2 }}>
-                  <Text
-                    style={{
-                      color: nota.Estilos.fontColor,
-                      fontWeight: nota.Estilos.WeightFont,
-                      fontSize: nota.Estilos.SizeFont,
-                    }}
-                  >
-                    {nota.Contenido}
-                  </Text>
-                </View>
-                <View style={styles.viewFcBtns}>
-                  <View style={styles.viewFecha}>
-                    <Text style={styles.txtFecha}>
-                      {nota.Fecha
-                        ? format(new Date(nota.Fecha), 'hh:mm a dd/MM/yyyy')
-                        : 'Sin fecha'}
+                <Text
+                  style={{
+                    color: nota.Estilos.fontColor,
+                    fontWeight: nota.Estilos.WeightFont,
+                    fontSize: nota.Estilos.SizeFont,
+                  }}
+                >
+                  {isCollapsed === index
+                    ? `${nota.Titulo} ⌃`
+                    : `${nota.Titulo} ⌄`}
+                </Text>
+              </TouchableOpacity>
+
+              <ScrollView style={{ overflow: 'hidden' }}>
+                <Collapsible
+                  collapsed={isCollapsed !== index}
+                  style={[
+                    styles.collapsibleContent,
+                    {
+                      backgroundColor: nota.Estilos.Bgcolor,
+                      borderRadius: nota.Estilos.EsquinaBorder,
+                    },
+                  ]}
+                >
+                  <View style={{ justifyContent: 'center', margin: 2 }}>
+                    <Text
+                      style={{
+                        color: nota.Estilos.fontColor,
+                        fontWeight: nota.Estilos.WeightFont,
+                        fontSize: nota.Estilos.SizeFont,
+                      }}
+                    >
+                      {nota.Contenido}
                     </Text>
                   </View>
-                  <View style={styles.viewPressables}>
-                    <Pressable
-                      style={styles.btnPressable}
-                      onPress={() => mostrarModal(nota)}
-                    >
-                      <Text style={styles.txtBotones}>✏️</Text>
-                    </Pressable>
-                    <Pressable
-                      style={styles.btnPressable}
-                      onPress={() => alertaSiyNo(nota.key)}
-                    >
-                      <Text style={styles.txtBotones}>🗑️</Text>
-                    </Pressable>
+                  <View style={styles.viewFcBtns}>
+                    <View style={styles.viewFecha}>
+                      <Text style={styles.txtFecha}>
+                        {nota.Fecha
+                          ? format(new Date(nota.Fecha), 'hh:mm a dd/MM/yyyy')
+                          : 'Sin fecha'}
+                      </Text>
+                    </View>
+                    <View style={styles.viewPressables}>
+                      <Pressable
+                        style={styles.btnPressable}
+                        onPress={() => mostrarModal(nota)}
+                      >
+                        <Text style={styles.txtBotones}>✏️</Text>
+                      </Pressable>
+                      <Pressable
+                        style={styles.btnPressable}
+                        onPress={() => alertaSiyNo(nota.key)}
+                      >
+                        <Text style={styles.txtBotones}>🗑️</Text>
+                      </Pressable>
+                    </View>
                   </View>
-                </View>
-              </Collapsible>
-            </ScrollView>
-          </View>
-        ))}
-      </ScrollView>
+                </Collapsible>
+              </ScrollView>
+            </View>
+          ))}
+        </ScrollView>
+      )}
       <Portal>
         <Modal
           visible={modalVisible}

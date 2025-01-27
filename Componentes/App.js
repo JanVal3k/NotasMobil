@@ -77,7 +77,8 @@ const App = () => {
   const layout = useWindowDimensions();
   const [expoPushToken, setExpoPushToken] = useState('');
   const [index, setIndex] = useState(0);
-  //listener--------------
+
+  //-----------------------------------
   useEffect(() => {
     requestNotificationPermissions().then((token) => setExpoPushToken(token));
     const subscription = Notifications.addNotificationReceivedListener(
@@ -88,10 +89,11 @@ const App = () => {
 
     return () => subscription.remove();
   }, []);
-  //listener--------------
+  //--------------------------------
   useEffect(() => {
     requestNotificationPermissions();
   }, []);
+  //---------------------------------
   return (
     <ProvedorEstado>
       <PaperProvider>
